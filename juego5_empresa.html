@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lo que puede hacer la empresa y sus límites · Juego 5 · cc Oriol Pérez</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;700;800&family=Nunito+Sans:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root { --navy:#1F3A5F; --light:#F6F4EE; --paper:#FCFBF8; --acc:#7A5195; --ok:#1E6F66; --okbg:#E3F2EF; --bad:#B5472B; --badbg:#FBE3DC; --text:#33404F; }
+* { box-sizing:border-box; }
+html, body { margin:0; height:100%; }
+body { font-family:'Nunito Sans', Verdana, sans-serif; color:var(--text); background:var(--light); }
+.app { min-height:100%; display:flex; flex-direction:column; }
+header { display:flex; align-items:center; justify-content:space-between; gap:16px; padding:14px 22px; background:var(--navy); color:#F6F4EE; }
+header .t { font-family:'Rubik', Arial, sans-serif; font-weight:700; font-size:clamp(16px,2.2vw,22px); line-height:1.2; }
+header .t small { display:block; font-family:'Nunito Sans', sans-serif; font-weight:700; font-size:12px; letter-spacing:2px; text-transform:uppercase; color:#F4A261; }
+.btn-fs { border:2px solid #F6F4EE; background:transparent; color:#F6F4EE; font:700 15px 'Nunito Sans', sans-serif; padding:9px 14px; border-radius:10px; cursor:pointer; white-space:nowrap; }
+.btn-fs:hover, .btn-fs:focus-visible { background:#F6F4EE; color:var(--navy); outline:none; }
+main { flex:1; display:flex; justify-content:center; padding:22px; }
+.card { position:relative; width:100%; max-width:980px; background:var(--paper); border-radius:22px; padding:clamp(20px,3.5vw,40px); box-shadow:0 10px 30px rgba(31,58,95,.10); overflow:hidden; }
+.card::before { content:""; position:absolute; inset:0; background-image:var(--wmtile); background-size:300px 170px; opacity:.55; pointer-events:none; }
+.card > * { position:relative; }
+.hud { display:flex; flex-wrap:wrap; gap:10px 22px; align-items:center; justify-content:space-between; font-weight:700; font-size:15px; margin-bottom:14px; }
+.pill { background:#EEF2F6; border-radius:999px; padding:6px 14px; }
+.pill b { color:var(--navy); }
+.bar { height:10px; background:#E5E9EE; border-radius:99px; overflow:hidden; margin-bottom:8px; }
+.bar > i { display:block; height:100%; background:var(--acc); width:0; transition:width .3s; }
+.timer { height:6px; background:#E5E9EE; border-radius:99px; overflow:hidden; margin-bottom:22px; }
+.timer > i { display:block; height:100%; background:var(--navy); width:100%; }
+h1 { font-family:'Rubik', Arial, sans-serif; color:var(--navy); font-size:clamp(26px,4vw,44px); line-height:1.12; margin:0 0 14px; }
+h2.q { font-family:'Rubik', Arial, sans-serif; color:var(--navy); font-size:clamp(21px,2.8vw,32px); line-height:1.25; margin:0 0 22px; }
+p { font-size:clamp(16px,1.9vw,20px); line-height:1.5; margin:0 0 14px; }
+.opts { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+@media (max-width:700px){ .opts { grid-template-columns:1fr; } }
+.opt { display:flex; gap:14px; align-items:center; text-align:left; width:100%; border:3px solid #DDE3EA; background:#FFFFFF; border-radius:16px; padding:16px 18px; font:700 clamp(16px,1.9vw,20px)/1.35 'Nunito Sans', sans-serif; color:var(--text); cursor:pointer; transition:transform .12s, border-color .12s; }
+.opt:hover:not(:disabled), .opt:focus-visible { border-color:var(--acc); transform:translateY(-2px); outline:none; }
+.opt .k { flex:none; width:38px; height:38px; border-radius:50%; background:var(--acc); color:#FFFFFF; display:flex; align-items:center; justify-content:center; font-family:'Rubik', sans-serif; font-size:18px; }
+.opt.right { border-color:var(--ok); background:var(--okbg); }
+.opt.wrong { border-color:var(--bad); background:var(--badbg); }
+.opt:disabled { cursor:default; }
+.fb { margin-top:20px; border-radius:16px; padding:18px 22px; display:none; }
+.fb.show { display:block; animation:pop .25s ease-out; }
+.fb.ok { background:var(--okbg); color:#10302C; }
+.fb.ko { background:var(--badbg); color:#5A1E10; }
+.fb strong { font-family:'Rubik', sans-serif; font-size:clamp(18px,2.2vw,23px); display:block; margin-bottom:6px; }
+.row { display:flex; gap:12px; flex-wrap:wrap; margin-top:20px; }
+.go { border:0; background:var(--navy); color:#F6F4EE; font:700 clamp(16px,1.9vw,20px) 'Nunito Sans', sans-serif; padding:14px 26px; border-radius:14px; cursor:pointer; }
+.go.alt { background:var(--acc); color:#FFFFFF; }
+.go:focus-visible { outline:4px solid #F4A261; outline-offset:2px; }
+.big { font-family:'Rubik', sans-serif; font-weight:800; font-size:clamp(54px,9vw,96px); color:var(--acc); line-height:1; margin:6px 0 10px; }
+.review { margin-top:18px; border-top:2px solid #E5E9EE; padding-top:14px; }
+.review div { padding:10px 0; border-bottom:1px solid #EEF1F4; font-size:17px; line-height:1.45; }
+.streak { color:var(--bad); }
+footer { text-align:center; font-size:13px; color:#5B6675; padding:10px 16px 16px; }
+@keyframes pop { from { transform:scale(.97); opacity:.4; } to { transform:scale(1); opacity:1; } }
+@media (prefers-reduced-motion: reduce) { * { animation:none !important; transition:none !important; } }
+#wm { position:fixed; inset:0; width:100%; height:100%; pointer-events:none; z-index:2147483647; }
+</style>
+</head>
+<body>
+<div class="app" id="app">
+<header>
+  <div class="t"><small>Drets i deures laborals · Juego 5 de 6</small>Lo que puede hacer la empresa y sus límites</div>
+  <button class="btn-fs" id="fs" type="button" aria-pressed="false">⛶ Pantalla completa</button>
+</header>
+<main><div class="card" id="card" aria-live="polite"></div></main>
+<footer>cc Oriol Pérez · Licencia CC BY-SA 4.0 · Datos legales a noviembre de 2026</footer>
+</div>
+<canvas id="wm" aria-hidden="true"></canvas>
+<script>
+const QS = [{"q": "¿Qué artículo del Estatuto recoge el poder de dirección?", "o": ["El artículo 20", "El artículo 4", "El artículo 38", "El artículo 59"], "e": "La empresa organiza el trabajo, da órdenes y controla que se cumplan."}, {"q": "¿Qué artículo recoge el poder disciplinario?", "o": ["El artículo 58", "El artículo 5", "El artículo 20 bis", "El artículo 1"], "e": "Permite sancionar incumplimientos según las faltas del convenio."}, {"q": "¿Puede la empresa sancionarte quitándote días de vacaciones?", "o": ["No, está prohibido", "Sí, si la falta es grave", "Sí, si lo dice tu contrato", "Sí, si tú lo aceptas"], "e": "El artículo 58.3 lo prohíbe, igual que reducir otros descansos."}, {"q": "¿Puede la empresa sancionarte descontándote dinero del sueldo?", "o": ["No, las multas de haber están prohibidas", "Sí, hasta 100 €", "Sí, si llegas tarde", "Solo si lo firma el encargado"], "e": "También lo prohíbe el artículo 58.3."}, {"q": "¿Se pueden poner cámaras en los vestuarios?", "o": ["Nunca", "Sí, si hay robos", "Sí, si se avisa", "Solo de noche"], "e": "La ley de protección de datos las prohíbe en vestuarios, lavabos, comedores y zonas de descanso."}, {"q": "¿Puede la empresa poner cámaras en el almacén?", "o": ["Sí, si informa a la plantilla", "No, nunca", "Solo con permiso del juez", "Solo si hay un robo"], "e": "Es parte de su poder de control, respetando la dignidad y la información previa."}, {"q": "Te ordenan algo que pone en riesgo tu salud. ¿Tienes que obedecer?", "o": ["No, solo hay que cumplir las órdenes regulares", "Sí, siempre", "Sí, si te lo dice por escrito", "Sí, si es el gerente"], "e": "El deber de obedecer es solo para el ejercicio regular de la dirección."}, {"q": "Si una trabajadora embarazada corre riesgo en su puesto, la empresa debe…", "o": ["adaptar su puesto", "despedirla", "sancionarla", "bajarle el sueldo"], "e": "Lo exige el artículo 26 de la Ley de Prevención."}, {"q": "Ante un riesgo grave e inminente, puedes…", "o": ["interrumpir tu actividad", "seguir sin avisar", "esperar a que acabe el turno", "solo avisar por correo"], "e": "Lo permite el artículo 21 de la Ley de Prevención."}, {"q": "Para cambiarte el turno de forma importante, la empresa necesita…", "o": ["una causa justificada y avisar con al menos 15 días", "solo decirlo el mismo día", "nada, puede hacerlo cuando quiera", "permiso del juez"], "e": "Es una modificación sustancial (artículo 41)."}, {"q": "Cambiarte de funciones dentro de la empresa se llama…", "o": ["movilidad funcional", "movilidad geográfica", "despido objetivo", "excedencia"], "e": "Está en el artículo 39 del Estatuto."}, {"q": "Cambiarte de centro de trabajo a otra ciudad se llama…", "o": ["movilidad geográfica", "movilidad funcional", "ocupación efectiva", "teletrabajo"], "e": "Está en el artículo 40 del Estatuto."}, {"q": "Te cambian de turno como castigo por denunciar. Eso vulnera…", "o": ["la garantía de indemnidad", "la libertad de empresa", "el deber de obediencia", "la norma mínima"], "e": "Reclamar no puede traer represalias (artículo 24 de la Constitución)."}, {"q": "Un despido por estar embarazada es…", "o": ["nulo", "procedente", "improcedente siempre", "válido si se paga"], "e": "Lo dice el artículo 55.5 del Estatuto."}, {"q": "¿Qué pasa cuando un despido es nulo?", "o": ["Vuelves a tu puesto y cobras los salarios perdidos", "Te pagan solo una indemnización", "No pasa nada", "Te pagan el finiquito"], "e": "La readmisión es inmediata."}, {"q": "Descartar los currículos de las mujeres en una selección es…", "o": ["discriminación en el acceso al empleo", "legal si es una empresa privada", "una decisión de dirección", "una costumbre válida"], "e": "Vulnera la igualdad (artículo 14) y es una infracción muy grave."}, {"q": "El encargado te dice «a tu edad ya no se aprende». Es…", "o": ["un trato discriminatorio por edad y contra tu dignidad", "una crítica normal", "parte del poder de dirección", "una sanción leve"], "e": "La edad es una de las causas por las que no se puede discriminar."}, {"q": "No contestas un WhatsApp del jefe a las 23:30. ¿Pueden sancionarte?", "o": ["No", "Sí, con una falta leve", "Sí, con un descuento", "Sí, si es urgente"], "e": "Fuera de horario tienes derecho a la desconexión digital."}, {"q": "La encargada te pide reorganizar los palés. ¿Tienes que hacerlo?", "o": ["Sí, es una orden normal de dirección", "No, nunca", "Solo si te pagan aparte", "Solo si lo pide por escrito"], "e": "Cumplir las órdenes regulares es un deber (artículo 5.c)."}, {"q": "¿Dónde se gradúan las faltas y sanciones?", "o": ["En el convenio colectivo", "En el contrato de cada persona", "En la Constitución", "Las decide el encargado"], "e": "El convenio dice qué es falta leve, grave o muy grave."}];
+const WM = "cc Oriol Pérez";
+const TIME = 30;
+const $ = s => document.querySelector(s);
+const card = $('#card');
+let order = [], i = 0, score = 0, hits = 0, streak = 0, best = 0, failed = [], tStart = 0, tId = null, locked = false;
+
+function shuffle(a){ a = a.slice(); for (let k = a.length - 1; k > 0; k--) { const j = Math.floor(Math.random() * (k + 1)); [a[k], a[j]] = [a[j], a[k]]; } return a; }
+function esc(s){ return s.replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+function start(){
+  order = shuffle(QS.map((q, n) => n)); i = 0; score = 0; hits = 0; streak = 0; best = 0; failed = [];
+  show();
+}
+function intro(){
+  card.innerHTML = `<h1>Lo que puede hacer la empresa y sus límites</h1>
+  <p>20 preguntas sobre este concepto. Tienes ${TIME} segundos para cada una. Cada acierto suma 100 puntos, más un extra por responder rápido y por encadenar aciertos seguidos.</p>
+  <p>Puedes contestar con el ratón o con las teclas 1, 2, 3 y 4. Después de cada respuesta verás por qué es la correcta.</p>
+  <div class="row"><button class="go alt" id="b0" type="button">Empezar</button></div>`;
+  $('#b0').onclick = start; $('#b0').focus();
+}
+function show(){
+  locked = false;
+  const q = QS[order[i]];
+  const opts = shuffle(q.o.map((t, n) => ({ t, ok: n === 0 })));
+  card.innerHTML = `<div class="hud">
+    <span class="pill">Pregunta <b>${i + 1}</b> de ${QS.length}</span>
+    <span class="pill">Puntos <b>${score}</b></span>
+    <span class="pill">Racha <b class="streak">${streak}</b></span></div>
+    <div class="bar"><i style="width:${(i / QS.length) * 100}%"></i></div>
+    <div class="timer"><i id="tm"></i></div>
+    <h2 class="q">${esc(q.q)}</h2>
+    <div class="opts">${opts.map((o, n) => `<button class="opt" type="button" data-ok="${o.ok}"><span class="k">${n + 1}</span><span>${esc(o.t)}</span></button>`).join('')}</div>
+    <div class="fb" id="fb" role="status"></div>`;
+  card.querySelectorAll('.opt').forEach(b => b.onclick = () => answer(b));
+  tStart = performance.now(); clearInterval(tId);
+  tId = setInterval(() => {
+    const left = Math.max(0, TIME - (performance.now() - tStart) / 1000);
+    const tm = $('#tm'); if (tm) tm.style.width = (left / TIME * 100) + '%';
+    if (left <= 0) answer(null);
+  }, 100);
+}
+function answer(btn){
+  if (locked) return; locked = true; clearInterval(tId);
+  const q = QS[order[i]];
+  const all = [...card.querySelectorAll('.opt')];
+  all.forEach(b => { b.disabled = true; if (b.dataset.ok === 'true') b.classList.add('right'); });
+  const ok = btn && btn.dataset.ok === 'true';
+  const fb = $('#fb');
+  if (ok) {
+    const secs = (performance.now() - tStart) / 1000;
+    streak++; best = Math.max(best, streak); hits++;
+    const pts = 100 + Math.round(Math.max(0, TIME - secs) * 2) + (streak > 1 ? (streak - 1) * 10 : 0);
+    score += pts;
+    fb.className = 'fb ok show';
+    fb.innerHTML = `<strong>¡Correcto! +${pts} puntos</strong>${esc(q.e)}`;
+  } else {
+    if (btn) btn.classList.add('wrong');
+    streak = 0; failed.push(q);
+    fb.className = 'fb ko show';
+    fb.innerHTML = `<strong>${btn ? 'No es esa' : 'Se acabó el tiempo'}</strong>La respuesta correcta es «${esc(q.o[0])}». ${esc(q.e)}`;
+  }
+  fb.insertAdjacentHTML('beforeend', `<div class="row"><button class="go" id="nx" type="button">${i + 1 < QS.length ? 'Siguiente pregunta' : 'Ver resultado'}</button></div>`);
+  $('#nx').onclick = next; $('#nx').focus();
+}
+function next(){ i++; if (i < QS.length) show(); else end(); }
+function end(){
+  const msg = hits >= 18 ? 'Dominas este concepto.' : hits >= 14 ? 'Muy bien, casi todo claro.' : hits >= 10 ? 'Vas bien; repasa las que has fallado.' : 'Vale la pena repasar este bloque y volver a jugar.';
+  card.innerHTML = `<h1>Resultado</h1>
+    <div class="big">${score} puntos</div>
+    <p><b>${hits} aciertos de ${QS.length}</b> · mejor racha: ${best}. ${msg}</p>
+    ${failed.length ? `<div class="review"><p><b>Para repasar</b></p>${failed.map(q => `<div><b>${esc(q.q)}</b><br>${esc(q.o[0])}. ${esc(q.e)}</div>`).join('')}</div>` : ''}
+    <div class="row"><button class="go alt" id="rp" type="button">Jugar otra vez</button></div>`;
+  $('#rp').onclick = start; $('#rp').focus();
+}
+document.addEventListener('keydown', e => {
+  if (['1','2','3','4'].includes(e.key)) { const b = card.querySelectorAll('.opt')[+e.key - 1]; if (b && !b.disabled) answer(b); }
+});
+
+/* Pantalla completa */
+const fsBtn = $('#fs');
+fsBtn.onclick = async () => {
+  try {
+    if (!document.fullscreenElement) { await document.documentElement.requestFullscreen(); }
+    else { await document.exitFullscreen(); }
+  } catch (err) { fsBtn.textContent = 'Pantalla completa no disponible aquí'; }
+};
+document.addEventListener('fullscreenchange', () => {
+  const on = !!document.fullscreenElement;
+  fsBtn.textContent = on ? '✕ Salir de pantalla completa' : '⛶ Pantalla completa';
+  fsBtn.setAttribute('aria-pressed', on);
+  drawWM();
+});
+
+/* Marca de agua: varias capas superpuestas que se regeneran si se eliminan */
+(function(){
+  const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='300' height='170'><g transform='rotate(-22 150 85)' font-family='Arial' font-weight='700' fill='%231F3A5F' fill-opacity='0.07'><text x='10' y='70' font-size='26'>${encodeURIComponent(WM)}</text><text x='120' y='140' font-size='15'>${encodeURIComponent(WM)}</text></g></svg>`;
+  document.documentElement.style.setProperty('--wmtile', `url("data:image/svg+xml;utf8,${svg}")`);
+})();
+function drawWM(){
+  let c = document.getElementById('wm');
+  if (!c) { c = document.createElement('canvas'); c.id = 'wm'; c.setAttribute('aria-hidden', 'true'); document.body.appendChild(c); }
+  c.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:2147483647;display:block;opacity:1;visibility:visible';
+  const dpr = window.devicePixelRatio || 1, W = innerWidth, H = innerHeight;
+  c.width = W * dpr; c.height = H * dpr;
+  const x = c.getContext('2d'); x.setTransform(dpr, 0, 0, dpr, 0, 0); x.clearRect(0, 0, W, H);
+  let seed = 7; const rnd = () => (seed = (seed * 9301 + 49297) % 233280) / 233280;
+  x.save(); x.translate(W / 2, H / 2); x.rotate(-0.38);
+  const R = Math.hypot(W, H);
+  for (let y = -R; y < R; y += 120) {
+    for (let xx = -R + ((y / 120) % 2) * 130; xx < R; xx += 300) {
+      const s = 20 + Math.round(rnd() * 14);
+      x.font = `800 ${s}px Rubik, Arial, sans-serif`;
+      x.fillStyle = `rgba(31,58,95,${0.075 + rnd() * 0.04})`;
+      x.fillText(WM, xx + rnd() * 30, y + rnd() * 20);
+      x.font = `700 11px Arial, sans-serif`;
+      x.fillStyle = 'rgba(231,111,81,0.10)';
+      x.fillText(WM + ' · CC BY-SA', xx + 40, y + 46);
+    }
+  }
+  x.restore();
+}
+addEventListener('resize', drawWM);
+new MutationObserver(() => { const c = document.getElementById('wm'); if (!c || c.style.display === 'none' || c.style.opacity === '0') drawWM(); })
+  .observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['style', 'class'] });
+setInterval(() => { const c = document.getElementById('wm'); if (!c || getComputedStyle(c).display === 'none' || getComputedStyle(c).visibility === 'hidden' || +getComputedStyle(c).opacity < 0.5) drawWM(); }, 1500);
+drawWM();
+intro();
+</script>
+</body>
+</html>

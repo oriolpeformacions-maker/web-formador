@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Oriol Pérez">
+<meta name="copyright" content="© 2026 Oriol Pérez · CC BY-NC-ND 4.0">
+<title>¿Qué sabes? Juego de transición ecológica · CC BY-NC-ND Oriol Pérez</title>
+<style>
+  :root{--ink:#1B2B26;--dark:#12372A;--bg:#EEF6F1;--green:#2E8B57;--red:#E63946;--orange:#F28C28;--blue:#2D7DD2;--yellow:#F6C445;--purple:#7B4FA0;--brown:#8C5A3C;--grey:#6B7479}
+  *{box-sizing:border-box}
+  html,body{margin:0;min-height:100%}
+  body{font-family:Arial,"Liberation Sans",Helvetica,sans-serif;color:var(--ink);background:var(--bg);font-size:22px;line-height:1.4}
+  #wm{position:fixed;inset:0;pointer-events:none;z-index:9999;opacity:.08;
+      background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='420' height='190'><g transform='rotate(-24 210 95)' font-family='Arial' font-weight='bold' font-size='19' fill='%2312372A'><circle cx='40' cy='95' r='14' fill='none' stroke='%2312372A' stroke-width='3'/><text x='31' y='101' font-size='14'>cc</text><text x='62' y='101'>CC BY-NC-ND 4.0 · Oriol Pérez</text></g></svg>")}
+  #badge{position:fixed;left:12px;bottom:10px;z-index:10000;background:#fff;border:2px solid var(--dark);border-radius:20px;padding:4px 14px;font-size:15px;font-weight:bold;color:var(--dark)}
+  .wrap{max-width:1050px;margin:0 auto;padding:24px 20px 80px}
+  header{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+  h1{font-size:36px;margin:0;color:var(--dark)}
+  .pill{display:inline-block;padding:6px 16px;border-radius:999px;color:#fff;font-weight:bold;font-size:18px}
+  .card{background:#fff;border-radius:22px;padding:28px;box-shadow:0 3px 10px rgba(0,0,0,.12);margin-top:20px}
+  .bar{height:18px;background:#d6e4dc;border-radius:999px;overflow:hidden;margin-top:14px}
+  .bar>div{height:100%;background:var(--green);transition:width .4s}
+  .q{font-size:30px;font-weight:bold;margin:8px 0 18px}
+  .opts{display:grid;gap:14px}
+  .opt{display:flex;align-items:center;gap:16px;width:100%;text-align:left;font:inherit;font-size:24px;padding:16px 18px;border-radius:16px;border:3px solid #cfdcd5;background:#fff;cursor:pointer;color:var(--ink)}
+  .opt:hover,.opt:focus{border-color:var(--dark);outline:none}
+  .opt .l{flex:0 0 52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:bold;font-size:26px}
+  .opt.ok{background:#D8F0E1;border-color:var(--green)}
+  .opt.bad{background:#FDE7E8;border-color:var(--red)}
+  .opt[disabled]{cursor:default}
+  .bins{grid-template-columns:repeat(3,1fr)}
+  .bin{flex-direction:column;text-align:center;justify-content:center;font-weight:bold;color:#fff;min-height:120px}
+  .bin svg{width:56px;height:68px}
+  .fb{margin-top:20px;padding:20px;border-radius:16px;font-size:23px;display:none}
+  .fb.ok{display:block;background:#D8F0E1}
+  .fb.bad{display:block;background:#FDE7E8}
+  .fb b{font-size:26px}
+  .row{display:flex;gap:14px;flex-wrap:wrap;margin-top:20px;align-items:center}
+  .btn{font:inherit;font-weight:bold;font-size:22px;padding:14px 26px;border-radius:14px;border:none;cursor:pointer;color:#fff;background:var(--dark)}
+  .btn.alt{background:#fff;color:var(--dark);border:3px solid var(--dark)}
+  .btn:focus{outline:4px solid var(--yellow)}
+  .topics{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin-top:16px}
+  .topic{font:inherit;font-size:22px;font-weight:bold;color:#fff;border:none;border-radius:16px;padding:20px;cursor:pointer;text-align:left}
+  .stars{font-size:64px;letter-spacing:6px}
+  .big{font-size:56px;font-weight:bold;color:var(--dark)}
+  .hidden{display:none}
+  .topbar{position:sticky;top:0;z-index:50;display:flex;gap:10px;justify-content:flex-end;padding:10px 20px;background:rgba(238,246,241,.92)}
+  .tool{font:inherit;font-size:18px;font-weight:bold;padding:8px 16px;border-radius:999px;border:2px solid var(--dark);background:#fff;color:var(--dark);cursor:pointer}
+  .tool.on{background:var(--dark);color:#fff}
+  @media (max-width:700px){body{font-size:20px}.q{font-size:25px}.bins{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<div id="wm" aria-hidden="true"></div>
+<div id="badge">CC BY-NC-ND 4.0 · Oriol Pérez</div>
+<div class="topbar">
+  <button class="tool" id="snd" aria-pressed="false">🔇 Sonido: no</button>
+  <button class="tool" id="fs">⛶ Pantalla completa</button>
+</div>
+<div class="wrap">
+  <header>
+    <span class="pill" style="background:var(--purple)">JUEGO 1</span>
+    <h1>¿Qué sabes de la transición ecológica?</h1>
+  </header>
+
+  <section id="start" class="card">
+    <p style="font-size:26px;margin-top:0"><b>Cómo se juega:</b> lee la pregunta (o pulsa el altavoz para escucharla) y elige una respuesta. Si te equivocas, el juego te explica por qué. No hay prisa: no hay tiempo límite.</p>
+    <p style="margin-bottom:4px"><b>Elige un tema</b> o juega con todas las preguntas:</p>
+    <div class="topics" id="topics"></div>
+    <p class="note" style="font-size:18px;color:#4A5560">Con «Sonido: sí» (arriba a la derecha) el juego lee en voz alta cada pregunta y cada explicación. El botón «Escuchar» funciona siempre.</p>
+  </section>
+
+  <section id="game" class="card hidden" aria-live="polite">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+      <span id="tag" class="pill"></span>
+      <span id="count" style="font-weight:bold"></span>
+    </div>
+    <div class="bar"><div id="prog" style="width:0%"></div></div>
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="fb" id="fb"></div>
+    <div class="row">
+      <button class="btn alt" id="speak" title="Escuchar la pregunta">🔊 Escuchar</button>
+      <button class="btn hidden" id="next">Siguiente ➜</button>
+    </div>
+  </section>
+
+  <section id="end" class="card hidden" style="text-align:center">
+    <div class="stars" id="stars"></div>
+    <div class="big" id="score"></div>
+    <p id="msg" style="font-size:26px"></p>
+    <div id="review" style="text-align:left"></div>
+    <div class="row" style="justify-content:center">
+      <button class="btn" id="again">Jugar otra vez</button>
+      <button class="btn alt" id="menu">Elegir otro tema</button>
+    </div>
+  </section>
+  <p style="font-size:15px;margin-top:30px;color:#4A5560">© 2026 Oriol Pérez · Licencia Creative Commons BY-NC-ND 4.0: se puede compartir citando la autoría, sin uso comercial y sin modificarlo.</p>
+</div>
+
+<script>
+const TOPICS = {
+  lim:   {name:"Límites planetarios", color:"#E63946"},
+  why:   {name:"¿Por qué cambiar?", color:"#F28C28"},
+  trans: {name:"Transición: historia y hoy", color:"#2E8B57"},
+  agenda:{name:"Agenda 2030", color:"#7B4FA0"},
+  pacto: {name:"Pacto Verde Europeo", color:"#1E4FA3"},
+  recy:  {name:"¿A qué contenedor va?", color:"#9A6F00"},
+  huella:{name:"Huella de carbono", color:"#8C5A3C"},
+  real:  {name:"Nivel difícil: dilemas reales", color:"#5B2333"}
+};
+// type "bin": answer is a bin key
+const Q = [
+ {t:"why",q:"¿Qué hace el efecto invernadero?",o:["Filtra los rayos del Sol que queman la piel","Guarda parte del calor, como una manta","Limpia los océanos"],a:1,e:"Algunos gases del aire guardan parte del calor, como una manta. Es natural. El problema es que hemos puesto demasiadas mantas."},
+ {t:"why",q:"¿Cuál es el principal gas que calienta el planeta por culpa de las personas?",o:["El oxígeno","El dióxido de carbono (CO₂)","El helio"],a:1,e:"El CO₂ sale sobre todo de quemar carbón, petróleo y gas. Echamos muchísimo y dura siglos en el aire."},
+ {t:"why",q:"En 2026, ¿qué día ya habíamos gastado todo lo que el planeta puede renovar en un año?",o:["El 30 de julio","El 31 de diciembre","El 1 de enero"],a:0,e:"Fue el 30 de julio: el Día de la Sobrecapacidad de la Tierra. El resto del año vivimos de prestado."},
+ {t:"why",q:"¿Cuánto ha subido la temperatura media de la Tierra desde finales del siglo XIX?",o:["Unos 0,1 °C","Unos 1,4 °C","Unos 10 °C"],a:1,e:"Alrededor de 1,4 °C. Es la media de todo el planeta, y el IPCC lo relaciona con más olas de calor y sequías."},
+ {t:"lim",q:"¿Cuántos límites planetarios hay?",o:["3","9","17"],a:1,e:"Son 9 líneas rojas que mantienen la Tierra sana. 17 son los objetivos de la Agenda 2030."},
+ {t:"lim",q:"¿Cuál es el límite seguro de CO₂ en el aire?",o:["350 ppm","432 ppm","1.000 ppm"],a:0,e:"El límite seguro es 350 ppm. En 2026 se midieron unas 432 ppm, por eso está superado."},
+ {t:"lim",q:"¿Qué límite se superó por primera vez en 2025?",o:["La acidez del océano","La capa de ozono","Los aerosoles"],a:0,e:"La acidez del océano. El mar absorbe CO₂ y se vuelve más ácido; a corales y moluscos les cuesta formar su concha."},
+ {t:"lim",q:"En 2025, ¿cuántos límites planetarios se habían superado?",o:["2","5","7"],a:2,e:"7 de 9 están en rojo. Solo la capa de ozono y los aerosoles siguen en la zona segura."},
+ {t:"lim",q:"¿Qué límite se está recuperando gracias a un acuerdo entre países?",o:["La capa de ozono","El agua dulce","La biodiversidad"],a:0,e:"En 1987 el Protocolo de Montreal prohibió los gases que rompían la capa de ozono. Ahora se recupera: los acuerdos funcionan cuando se cumplen."},
+ {t:"lim",q:"Tirar botellas de plástico al campo, ¿con qué límite tiene que ver?",o:["Nuevas entidades (plásticos y químicos)","Capa de ozono","Agua dulce"],a:0,e:"El plástico es una «nueva entidad»: algo que la naturaleza no sabe deshacer. Se rompe en microplásticos."},
+ {t:"lim",q:"¿Qué es la biodiversidad?",o:["Un tipo de energía","La variedad de vida: plantas, animales, hongos y bacterias","Un contenedor de basura"],a:1,e:"Bio es vida y diversidad es variedad. Cada ser vivo hace un trabajo para que la naturaleza funcione."},
+ {t:"trans",q:"¿Qué es la transición ecológica?",o:["Cambiar poco a poco cómo vivimos, producimos y nos movemos para cuidar el planeta","Dejar de usar toda la energía","Una moda que pasará pronto"],a:0,e:"Es un cambio profundo y gradual. No es dejar de usar energía: es usarla mejor y que sea limpia."},
+ {t:"trans",q:"¿Por qué el carbón, el petróleo y el gas se llaman «combustibles fósiles»?",o:["Porque son muy caros","Porque vienen de plantas y animales enterrados hace millones de años","Porque se fabrican en laboratorios"],a:1,e:"Se formaron bajo tierra durante millones de años a partir de restos de seres vivos, como los fósiles."},
+ {t:"trans",q:"¿En qué año se firmaron la Agenda 2030 y el Acuerdo de París?",o:["1992","2015","2026"],a:1,e:"Las dos en 2015. En 1992 fue la Cumbre de la Tierra de Río."},
+ {t:"trans",q:"¿Qué temperatura no quiere superar el Acuerdo de París?",o:["Entre 1,5 y 2 °C más que antes de las fábricas","10 °C","No pone ningún límite"],a:0,e:"Quiere que el calentamiento quede muy por debajo de 2 °C y, si se puede, en 1,5 °C."},
+ {t:"trans",q:"¿Qué quiere decir «descarbonizar»?",o:["Fabricar más carbón","Dejar de quemar carbón, petróleo y gas","Limpiar las chimeneas"],a:1,e:"Es dejar de echar carbono al aire: pasar a energías limpias como el sol y el viento."},
+ {t:"trans",q:"En 2025, ¿qué parte de la electricidad del mundo era renovable?",o:["Alrededor de un tercio (34 %)","Casi nada (3 %)","Toda (100 %)"],a:0,e:"Un 34 %. Por primera vez, las renovables dieron más electricidad que el carbón. En la UE fue el 47 %."},
+ {t:"agenda",q:"¿Cuántos Objetivos de Desarrollo Sostenible (ODS) tiene la Agenda 2030?",o:["8","17","193"],a:1,e:"17 objetivos con 169 metas. 193 son los países de la ONU que la aprobaron."},
+ {t:"agenda",q:"¿Qué ODS habla de «Acción por el clima»?",o:["ODS 1","ODS 13","ODS 17"],a:1,e:"El ODS 13. El 1 es fin de la pobreza y el 17, alianzas."},
+ {t:"agenda",q:"Cerrar el grifo mientras me lavo los dientes ayuda sobre todo al…",o:["ODS 6: Agua limpia","ODS 9: Industria","ODS 16: Paz y justicia"],a:0,e:"El ODS 6 trata del agua limpia y de usarla con cuidado."},
+ {t:"agenda",q:"Según la ONU (2026), ¿cómo va la Agenda 2030?",o:["Ya se han cumplido todas las metas","Va con retraso: solo 36 de cada 100 metas van bien","Se ha cancelado"],a:1,e:"Solo 36 de cada 100 metas van bien o avanzan. 49 van demasiado despacio y 15 han ido hacia atrás."},
+ {t:"agenda",q:"Una empresa pone la rueda de colores de los ODS en su web, pero no da ningún dato. ¿Qué es eso?",o:["Un premio","Greenwashing o lavado verde","Una ley"],a:1,e:"Aparentar que eres ecológico sin demostrarlo es greenwashing. Lo serio es poner metas con números y publicar los datos."},
+ {t:"pacto",q:"¿Qué quiere conseguir el Pacto Verde Europeo en 2050?",o:["Prohibir todos los coches","Que Europa sea climáticamente neutra","Dejar de usar electricidad"],a:1,e:"Neutralidad climática: que los gases que se echan sean iguales a los que la naturaleza puede absorber."},
+ {t:"pacto",q:"¿Cuándo se presentó el Pacto Verde Europeo?",o:["En 1987","En 2019","En 2030"],a:1,e:"En diciembre de 2019, por la Comisión Europea."},
+ {t:"pacto",q:"¿Cuánto tiene que bajar Europa sus gases en 2030 respecto a 1990?",o:["Al menos un 55 %","Un 5 %","Nada"],a:0,e:"Al menos un 55 %. El paquete de leyes para conseguirlo se llama Objetivo 55 (Fit for 55)."},
+ {t:"pacto",q:"¿Cuál es la diferencia entre el Acuerdo de París y el Pacto Verde?",o:["Son lo mismo","París es para todo el mundo; el Pacto Verde es el plan de la Unión Europea","El Pacto Verde es más antiguo"],a:1,e:"París es el marco mundial. El Pacto Verde es la forma en que Europa lo cumple, con leyes obligatorias."},
+ {t:"pacto",q:"¿Qué es la «transición justa»?",o:["Que nadie se quede atrás: ayudas y formación para quien pierde su empleo","Un juicio","Cerrar todas las fábricas"],a:0,e:"Por ejemplo, un fondo europeo ayuda a las zonas y trabajadores del carbón a encontrar nuevos empleos."},
+ {t:"recy",type:"bin",q:"¿Dónde va un brik de leche?",a:"amarillo",e:"Al amarillo: el brik es un envase con capas de plástico y aluminio, no es papel."},
+ {t:"recy",type:"bin",q:"¿Dónde va una botella de vino vacía?",a:"verde",e:"Al verde (iglú), sin el tapón. El tapón va al amarillo."},
+ {t:"recy",type:"bin",q:"¿Dónde va una caja de cartón?",a:"azul",e:"Al azul, plegada para que ocupe menos."},
+ {t:"recy",type:"bin",q:"¿Dónde va una piel de plátano?",a:"marron",e:"Al marrón: es materia orgánica y se convierte en compost (abono)."},
+ {t:"recy",type:"bin",q:"¿Dónde va un pañal usado?",a:"gris",e:"Al gris (resto): no se puede reciclar con los demás."},
+ {t:"recy",type:"bin",q:"¿Dónde van las pilas gastadas?",a:"punto",e:"Al punto limpio (deixalleria) o a los contenedores de pilas de las tiendas: tienen metales tóxicos."},
+ {t:"recy",type:"bin",q:"¿Dónde va un vaso de cristal roto?",a:"gris",e:"Al gris. Los vasos y copas no son vidrio de envase y estropean el reciclaje del verde."},
+ {t:"recy",type:"bin",q:"¿Dónde va una servilleta de papel sucia de comida?",a:"marron",e:"Al marrón: el papel sucio de comida no se puede reciclar en el azul."},
+ {t:"recy",type:"bin",q:"¿Dónde va el aceite de cocinar usado?",a:"punto",e:"En una botella cerrada, al punto limpio. Nunca por el fregadero: ensucia muchísima agua."},
+ {t:"recy",q:"¿Qué es «separar en origen»?",o:["Separar la basura en la planta de reciclaje","Poner cada residuo en su cubo en casa o en el trabajo, antes de que se mezcle","Tirarlo todo junto"],a:1,e:"Origen es donde nace el residuo. Si se separa bien allí, se recicla mucho mejor."},
+ {t:"recy",q:"¿Qué es mejor para el planeta?",o:["Reciclar una bolsa de plástico","No coger la bolsa porque llevo la mía","Quemar la bolsa"],a:1,e:"Rechazar va antes que reciclar: si no se fabrica, no hay residuo ni gasto de energía."},
+ {t:"huella",q:"¿Qué es la huella de carbono?",o:["La marca del zapato en el barro","Todos los gases que echamos al aire por lo que hacemos o fabricamos","La cantidad de basura que tiramos"],a:1,e:"Se mide en kilos o toneladas de CO₂ equivalente."},
+ {t:"huella",q:"Si se mide lo que emite una empresa al trabajar, ¿qué huella es?",o:["Personal","De empresa (corporativa)","De producto"],a:1,e:"Es la huella de empresa u organización: furgonetas, electricidad, viajes, compras…"},
+ {t:"huella",q:"Ana hace 4.400 km al año en coche. El factor es 0,15 kg por km. ¿Cuál es su huella?",o:["660 kg de CO₂","4.400 kg de CO₂","15 kg de CO₂"],a:0,e:"Se multiplica: 4.400 × 0,15 = 660 kg de CO₂."},
+ {t:"huella",q:"Gasto 2.500 kWh de luz al año. Factor: 0,2 kg por kWh. ¿Cuál es la huella?",o:["50 kg","500 kg","2.700 kg"],a:1,e:"2.500 × 0,2 = 500 kg de CO₂. Con luz 100 % renovable bajaría casi a cero."},
+ {t:"huella",q:"¿Qué tiene más huella por cada kilo?",o:["Legumbres","Carne de ternera","Las dos igual"],a:1,e:"La ternera: unos 27 kg de CO₂ por kilo, frente a 1 kg de las legumbres."},
+ {t:"huella",q:"¿Cuál de estas acciones NO reduce tu huella?",o:["Ir en bici o en bus","Dejar las luces encendidas","Reparar en vez de comprar"],a:1,e:"Dejar las luces encendidas gasta energía sin dar ningún servicio."}
+,
+ {t:"real",q:"Un país vive de exportar carbón. Si cierra las minas en un año, ¿qué es lo más probable?",o:["Bajan sus emisiones, pero pierde ingresos y empleo, y puede tener problemas de suministro si no tiene otra fuente","Solo ganan todos: bajan emisiones y sube el empleo enseguida","No pasa nada porque el carbón ya no se usa"],a:0,e:"La transición choca con el flujo económico y energético actual: el carbón da dinero, empleo y luz. Por eso se planifica por etapas y con planes de empleo."},
+ {t:"real",q:"En el mercado europeo de CO₂ (ETS), ¿quién paga?",o:["Las centrales y fábricas grandes, por cada tonelada de CO₂ que emiten","Solo los ciudadanos, en la factura del agua","Nadie: es voluntario"],a:0,e:"Las instalaciones cubiertas deben entregar un derecho por cada tonelada emitida. Si el precio sube, contaminar sale más caro y la energía fósil pierde ventaja."},
+ {t:"real",q:"El Acuerdo de París, ¿pone multas a los países que no cumplen?",o:["Sí, multas automáticas","No: se basa en planes nacionales y presión internacional","Solo a Europa"],a:1,e:"París no tiene sanciones. En cambio, la ley europea del clima sí es obligatoria: la Comisión puede abrir un expediente y el Tribunal de Justicia de la UE puede imponer multas."},
+ {t:"real",q:"¿Quién puede multar a un Estado de la UE por incumplir una directiva ambiental?",o:["La ONU","El Tribunal de Justicia de la UE, tras un procedimiento de la Comisión","El ayuntamiento"],a:1,e:"La Comisión abre un procedimiento de infracción; si el país no corrige, el Tribunal de Justicia de la UE puede imponer multas."},
+ {t:"real",q:"Un país firma un contrato de gas a 20 años con compra mínima. Diez años después quiere usar mucho menos gas. ¿Qué pasa?",o:["Puede dejar de comprar sin coste","Tiene que pagar igualmente una parte del gas contratado (cláusula «take or pay»)","El contrato se anula solo"],a:1,e:"Los contratos largos dan seguridad y precio, pero atan: reducir el gas antes de tiempo tiene penalizaciones. Es un ejemplo de bloqueo fósil."},
+ {t:"real",q:"Un país depende del gas de un vecino en guerra. ¿Qué reduce más su riesgo a largo plazo?",o:["Comprar gas a un único proveedor más barato","Diversificar proveedores, conectarse a redes vecinas y producir energía propia renovable","No hacer nada"],a:1,e:"Tras 2022, varios países europeos redujeron su dependencia con interconexiones, almacenamiento y renovables. La energía propia también es seguridad."},
+ {t:"real",q:"El turismo de cruceros deja mucho dinero en una ciudad. ¿Cuál es el principal problema ambiental?",o:["Ninguno","Los motores en el puerto contaminan el aire y emiten CO₂; además, saturan la ciudad","Solo el ruido de las maletas"],a:1,e:"Por eso algunas ciudades limitan los cruceros o les obligan a conectarse a la red eléctrica en el puerto. El dilema es: ingresos frente a aire limpio."},
+ {t:"real",q:"El tren de cercanías falla mucho. ¿Por qué bajar el precio del billete no basta?",o:["Porque si el servicio no es fiable, la gente sigue usando el coche: hace falta invertir en vías, trenes y mantenimiento","Porque el tren contamina más que el coche","Porque nadie usa el tren"],a:0,e:"El transporte público solo sustituye al coche si es frecuente y puntual. Sin inversión, se degrada y pierde viajeros."},
+ {t:"real",q:"¿Qué es la «fuga de carbono»?",o:["Una avería en una central","Que las fábricas se vayan a países sin normas de CO₂: las emisiones no bajan, solo cambian de país","Un tipo de gas"],a:1,e:"Para evitarla, la UE creó el CBAM: las importaciones de acero, cemento o abonos pagan por su CO₂ como los productos europeos."},
+ {t:"real",q:"Un gobierno acepta fondos europeos condicionados a medidas verdes y no las aplica. ¿Qué puede pasar?",o:["Nada","La Comisión puede reclamar la devolución del dinero","Recibe más fondos"],a:1,e:"Los fondos europeos se pagan por hitos. Si no se cumplen, se pueden suspender o reclamar."},
+ {t:"real",q:"En 2018, el Gobierno de España, los sindicatos y las empresas firmaron un acuerdo para cerrar las minas de carbón. ¿Qué incluía?",o:["Solo el cierre, sin nada más","Prejubilaciones, ayudas a la recolocación y planes para las comarcas mineras","Abrir minas nuevas"],a:1,e:"Es un ejemplo de transición justa: cerrar una actividad contaminante con un plan para las personas y los territorios afectados."},
+ {t:"real",q:"Un país de montaña quiere instalar parques eólicos, pero las obras tardan años. ¿Qué dificultad es la más realista?",o:["Permisos, recursos judiciales, orografía y falta de empresas, que encarecen y retrasan las obras","Que el viento no existe","Que la ley prohíbe la energía eólica"],a:0,e:"No basta con querer: la capacidad de construir infraestructuras (redes, vías, parques) condiciona el ritmo de la transición."}
+];
+const BINS = {
+  amarillo:{n:"Amarillo",s:"Envases",c:"#E0A800",ink:"#1B2B26"},
+  azul:{n:"Azul",s:"Papel y cartón",c:"#2D7DD2",ink:"#fff"},
+  verde:{n:"Verde",s:"Vidrio",c:"#2E8B57",ink:"#fff"},
+  marron:{n:"Marrón",s:"Restos de comida",c:"#8C5A3C",ink:"#fff"},
+  gris:{n:"Gris",s:"Resto",c:"#6B7479",ink:"#fff"},
+  punto:{n:"Punto limpio",s:"Pilas, aceite, aparatos",c:"#7B4FA0",ink:"#fff"}
+};
+const binSvg = (c)=>`<svg viewBox="0 0 50 60" aria-hidden="true"><rect x="7" y="12" width="36" height="44" rx="4" fill="${c}" stroke="#1B2B26" stroke-width="2.5"/><rect x="4" y="7" width="42" height="8" rx="3" fill="${c}" stroke="#1B2B26" stroke-width="2.5"/><rect x="19" y="2" width="12" height="6" rx="2" fill="#1B2B26"/></svg>`;
+const LET = ["A","B","C"], LCOL = ["#2D7DD2","#F28C28","#7B4FA0"];
+let list=[], idx=0, score=0, wrong=[], current="all";
+const $=id=>document.getElementById(id);
+
+let SOUND=false;
+try{ SOUND = localStorage.getItem("qs_sound")==="1"; }catch(e){}
+function renderSound(){ $("snd").textContent = SOUND ? "🔊 Sonido: sí" : "🔇 Sonido: no"; $("snd").classList.toggle("on",SOUND); $("snd").setAttribute("aria-pressed",SOUND); }
+$("snd").onclick=()=>{ SOUND=!SOUND; try{localStorage.setItem("qs_sound",SOUND?"1":"0");}catch(e){} if(!SOUND && "speechSynthesis" in window) speechSynthesis.cancel(); renderSound(); };
+renderSound();
+$("fs").onclick=()=>{ const d=document, el=d.documentElement; const on=d.fullscreenElement||d.webkitFullscreenElement;
+  if(!on)(el.requestFullscreen||el.webkitRequestFullscreen||function(){}).call(el); else (d.exitFullscreen||d.webkitExitFullscreen||function(){}).call(d); };
+["fullscreenchange","webkitfullscreenchange"].forEach(ev=>document.addEventListener(ev,()=>{ const on=document.fullscreenElement||document.webkitFullscreenElement; $("fs").textContent=on?"⛶ Salir de pantalla completa":"⛶ Pantalla completa"; $("fs").classList.toggle("on",!!on); }));
+function speak(text,force){
+  if(!("speechSynthesis" in window)) return;
+  speechSynthesis.cancel();
+  if(!SOUND && !force) return;
+  const u=new SpeechSynthesisUtterance(text); u.lang="es-ES"; u.rate=0.9;
+  const v=speechSynthesis.getVoices().find(v=>v.lang && v.lang.startsWith("es")); if(v) u.voice=v;
+  speechSynthesis.speak(u);
+}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+function buildTopics(){
+  const box=$("topics"); box.innerHTML="";
+  const all=document.createElement("button"); all.className="topic"; all.style.background="#12372A";
+  all.innerHTML="🌍 Todos los temas<br><span style='font-weight:normal;font-size:18px'>15 preguntas al azar</span>";
+  all.onclick=()=>start("all"); box.appendChild(all);
+  for(const k in TOPICS){
+    const n=Q.filter(q=>q.t===k).length;
+    const b=document.createElement("button"); b.className="topic"; b.style.background=TOPICS[k].color;
+    if(k==="recy") b.style.color="#fff";
+    b.innerHTML=`${TOPICS[k].name}<br><span style='font-weight:normal;font-size:18px'>${n} preguntas</span>`;
+    b.onclick=()=>start(k); box.appendChild(b);
+  }
+}
+function start(topic){
+  current=topic;
+  list = topic==="all" ? shuffle(Q.slice()).slice(0,15) : shuffle(Q.filter(q=>q.t===topic));
+  idx=0; score=0; wrong=[];
+  $("start").classList.add("hidden"); $("end").classList.add("hidden"); $("game").classList.remove("hidden");
+  show();
+}
+function questionText(q){
+  if(q.type==="bin") return q.q+" Opciones: amarillo, azul, verde, marrón, gris o punto limpio.";
+  return q.q+" "+q.o.map((o,i)=>"Opción "+LET[i]+": "+o+".").join(" ");
+}
+function show(){
+  const q=list[idx];
+  $("tag").textContent=TOPICS[q.t].name; $("tag").style.background=TOPICS[q.t].color;
+  $("count").textContent=`Pregunta ${idx+1} de ${list.length}`;
+  $("prog").style.width=(idx/list.length*100)+"%";
+  $("q").textContent=q.q;
+  const box=$("opts"); box.innerHTML=""; box.className="opts"+(q.type==="bin"?" bins":"");
+  $("fb").className="fb"; $("fb").innerHTML=""; $("next").classList.add("hidden");
+  if(q.type==="bin"){
+    for(const k in BINS){
+      const b=document.createElement("button"); b.className="opt bin"; b.style.background=BINS[k].c; b.style.color=BINS[k].ink; b.dataset.k=k;
+      b.innerHTML=binSvg(BINS[k].c)+`<span style="font-size:24px">${BINS[k].n}</span><span style="font-size:17px;font-weight:normal">${BINS[k].s}</span>`;
+      b.onclick=()=>answer(k===q.a,b,[...box.children].find(x=>x.dataset.k===q.a));
+      box.appendChild(b);
+    }
+  } else {
+    q.o.forEach((o,i)=>{
+      const b=document.createElement("button"); b.className="opt";
+      b.innerHTML=`<span class="l" style="background:${LCOL[i]}">${LET[i]}</span><span>${o}</span>`;
+      b.onclick=()=>answer(i===q.a,b,box.children[q.a]);
+      box.appendChild(b);
+    });
+  }
+  speak(questionText(q));
+  box.children[0].focus({preventScroll:true});
+}
+function answer(ok,btn,right){
+  const q=list[idx];
+  [...$("opts").children].forEach(b=>b.disabled=true);
+  if(ok){score++; btn.classList.add("ok");} else {btn.classList.add("bad"); right.classList.add("ok"); wrong.push(q);}
+  if(q.type==="bin"){ right.style.outline="6px solid #1B2B26"; }
+  const fb=$("fb"); fb.className="fb "+(ok?"ok":"bad");
+  fb.innerHTML=(ok?"<b>✅ ¡Muy bien!</b><br>":"<b>❌ Casi. </b><br>")+q.e;
+  speak((ok?"Muy bien. ":"Casi. ")+q.e);
+  $("next").classList.remove("hidden"); $("next").textContent= idx+1<list.length ? "Siguiente ➜" : "Ver resultado ➜"; $("next").focus();
+}
+$("next").onclick=()=>{ idx++; if(idx<list.length) show(); else finish(); };
+$("speak").onclick=()=>{ const q=list[idx]; const fb=$("fb").textContent; speak(questionText(q)+(fb?" "+fb:""),true); };
+function finish(){
+  if("speechSynthesis" in window) speechSynthesis.cancel();
+  $("game").classList.add("hidden"); $("end").classList.remove("hidden");
+  const pct=score/list.length, n= pct>=0.9?3: pct>=0.6?2: pct>=0.3?1:0;
+  $("stars").textContent="★".repeat(n)+"☆".repeat(3-n);
+  $("stars").style.color="#E0A800";
+  $("score").textContent=`${score} de ${list.length} aciertos`;
+  $("msg").textContent= n===3?"¡Excelente! Dominas el tema.": n===2?"¡Muy bien! Repasa las que has fallado.": n===1?"Vas bien. Vuelve a intentarlo: cada vez se aprende más.":"No pasa nada. Repasamos juntos y lo volvemos a intentar.";
+  $("review").innerHTML = wrong.length ? "<h3 style='font-size:26px'>Para repasar:</h3>"+wrong.map(q=>`<div class='card' style='margin-top:10px;padding:16px 20px'><b>${q.q}</b><br>${q.e}</div>`).join("") : "";
+}
+$("again").onclick=()=>start(current);
+document.addEventListener("visibilitychange",()=>{ if(document.hidden && "speechSynthesis" in window) speechSynthesis.cancel(); });
+$("menu").onclick=()=>{ $("end").classList.add("hidden"); $("start").classList.remove("hidden"); };
+buildTopics();
+// keep the licence watermark in place
+(function guard(){
+  const keep=()=>{ if(!document.getElementById("wm")){const d=document.createElement("div");d.id="wm";d.setAttribute("aria-hidden","true");document.body.prepend(d);}
+    if(!document.getElementById("badge")){const b=document.createElement("div");b.id="badge";b.textContent="CC BY-NC-ND 4.0 · Oriol Pérez";document.body.appendChild(b);} };
+  new MutationObserver(keep).observe(document.body,{childList:true}); setInterval(keep,2000);
+})();
+</script>
+</body>
+</html>

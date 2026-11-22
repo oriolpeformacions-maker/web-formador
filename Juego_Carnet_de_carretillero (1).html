@@ -1,0 +1,1393 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>[hidden]{display:none!important}body{margin:0}img{max-width:100%}</style>
+<title>Carnet de carretillero</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Barlow+Condensed:wght@600;700;800&family=Patrick+Hand&display=swap">
+<style>
+/* Layout: nave industrial clara — suelo de hormigón con marcas pintadas, fichas de examen como hojas cuadriculadas, una sola franja de peligro como acento */
+:root{
+  color-scheme: light;
+  --floor:#E8EAE4;
+  --floor-line:#DADDD5;
+  --panel:#FBFBF8;
+  --paper:#FFFFFF;
+  --grid:#E4E9EE;
+  --ink:#1E2226;
+  --ink-2:#4B525A;
+  --line:#C5C9C0;
+  --shadow:#B9BDB3;
+  --hi:#F2B200;
+  --hi-soft:#FCEAB0;
+  --kraft:#E2C08A;
+  --steel:#8C96A0;
+  --steel-soft:#D3D9DE;
+  --ok:#22744A;
+  --ok-soft:#DCEFE2;
+  --bad:#BE3328;
+  --bad-soft:#F8DDD9;
+  --blue:#1E5EA6;
+  --display:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
+  --body:"Atkinson Hyperlegible",Verdana,Tahoma,sans-serif;
+  --hand:"Patrick Hand","Comic Sans MS","Segoe Print",cursive;
+}
+html,body{min-height:100%}
+body{
+  background-color:var(--floor);
+  background-image:
+    linear-gradient(var(--floor-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--floor-line) 1px, transparent 1px);
+  background-size:96px 96px;
+  color:var(--ink);
+  font-family:var(--body);
+  font-size:17px;
+  line-height:1.55;
+}
+.hazard{height:10px;background:repeating-linear-gradient(-45deg,var(--hi) 0 16px,var(--ink) 16px 32px)}
+.wrap{max-width:1080px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 48px}
+h1,h2,h3{font-family:var(--display);text-transform:uppercase;letter-spacing:.02em;line-height:1.02;margin:0;text-wrap:balance}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+
+/* ---------- Dibujos a mano ---------- */
+.sk{stroke:var(--ink);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;fill:none}
+.sk .y{fill:var(--hi)} .sk .ys{fill:var(--hi-soft)} .sk .k{fill:var(--kraft)} .sk .g{fill:var(--steel-soft)}
+.sk .w{fill:var(--paper)} .sk .d{fill:var(--ink)} .sk .okf{fill:var(--ok)} .sk .badf{fill:var(--bad)}
+.sk .c{fill:#D7DAD2}
+svg text{font-family:var(--hand);fill:var(--ink);font-size:17px}
+svg text.big{font-size:22px}
+svg text.ok{fill:var(--ok)} svg text.bad{fill:var(--bad)}
+.drw{display:block;width:100%;height:auto;max-width:100%}
+
+/* ---------- Portada ---------- */
+.hero{display:grid;grid-template-columns:1.25fr 1fr;gap:28px;align-items:center;padding-block:18px 8px}
+.eyebrow{font-family:var(--display);font-weight:700;text-transform:uppercase;letter-spacing:.14em;font-size:15px;color:var(--ink-2)}
+.hero h1{font-size:clamp(2.6rem,7vw,4.6rem);font-weight:800;margin-top:6px}
+.hero h1 span{background:var(--hi);padding:0 .12em;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.hero p{max-width:58ch;margin:14px 0 0;color:var(--ink-2);font-size:1.06rem}
+.machines{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.tag{display:inline-flex;align-items:center;gap:6px;font-family:var(--display);font-weight:700;text-transform:uppercase;letter-spacing:.06em;font-size:14px;border:2px solid var(--ink);background:var(--panel);padding:3px 10px;border-radius:3px}
+.tag i{width:10px;height:10px;border-radius:50%;background:var(--hi);border:1.5px solid var(--ink);display:inline-block}
+.hero-art{background:var(--paper);border:2px solid var(--ink);box-shadow:8px 8px 0 var(--shadow);padding:10px;
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:18px 18px}
+
+.setup{margin-top:30px;background:var(--panel);border:2px solid var(--ink);padding:18px 20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:18px 26px}
+.setup h2{grid-column:1/-1;font-size:1.5rem}
+.field label,.field .lbl{display:block;font-family:var(--display);font-weight:700;text-transform:uppercase;letter-spacing:.08em;font-size:14px;color:var(--ink-2);margin-bottom:6px}
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.seg button{border:2px solid var(--ink);background:var(--paper);padding:6px 12px;border-radius:3px;font-weight:700;font-size:15px}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+.field.topics{grid-column:1/-1}
+.hint{font-size:14px;color:var(--ink-2);margin-top:6px}
+
+.modes{margin-top:30px;display:grid;grid-template-columns:repeat(auto-fit,minmax(235px,1fr));gap:18px}
+.mode{display:flex;flex-direction:column;text-align:left;background:var(--paper);border:2px solid var(--ink);padding:0;border-radius:4px;box-shadow:6px 6px 0 var(--shadow);transition:transform .12s, box-shadow .12s}
+.mode:hover{transform:translate(-2px,-2px);box-shadow:8px 8px 0 var(--shadow)}
+.mode .art{border-bottom:2px solid var(--ink);padding:8px 12px;height:150px;display:flex;align-items:center;justify-content:center;
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:16px 16px}
+.mode .art svg{max-height:134px;width:auto;max-width:100%}
+.mode .txt{padding:14px 16px 18px;display:flex;flex-direction:column;gap:6px;flex:1}
+.mode h3{font-size:1.6rem}
+.mode p{margin:0;color:var(--ink-2);font-size:15.5px}
+.mode .go{margin-top:auto;padding-top:8px;font-family:var(--display);font-weight:700;text-transform:uppercase;letter-spacing:.08em;font-size:15px}
+.mode .go b{background:var(--hi);padding:2px 8px;border:2px solid var(--ink)}
+.best{margin-top:22px;font-size:15px;color:var(--ink-2)}
+
+/* ---------- Juego ---------- */
+.topbar{display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px;justify-content:space-between}
+.topbar h2{font-size:1.7rem}
+.counter{font-family:var(--display);font-weight:700;font-size:1.2rem;font-variant-numeric:tabular-nums}
+.btn{border:2px solid var(--ink);background:var(--paper);padding:8px 16px;border-radius:3px;font-weight:700}
+.btn.primary{background:var(--hi)}
+.btn.dark{background:var(--ink);color:var(--paper)}
+.btn:hover{filter:brightness(.96)}
+.rack{margin-top:12px;display:flex;flex-wrap:wrap;gap:4px;padding:6px 8px;border:2px solid var(--ink);border-top-width:5px;background:var(--panel);border-top-color:var(--blue)}
+.slot{width:22px;height:16px;border:1.5px dashed var(--line);border-radius:2px;position:relative}
+.slot.now{border:2px solid var(--ink)}
+.slot.ok{border:1.5px solid var(--ink);background:var(--kraft)}
+.slot.ok::after{content:"";position:absolute;left:1px;right:1px;bottom:-1px;height:4px;background:repeating-linear-gradient(90deg,var(--ink) 0 3px,transparent 3px 7px)}
+.slot.bad{border:1.5px solid var(--bad);background:var(--bad-soft)}
+.slot.bad::before{content:"×";position:absolute;inset:-4px 0 0;text-align:center;color:var(--bad);font-weight:700;font-size:15px}
+.teams{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.team{display:flex;align-items:center;gap:8px;border:2px solid var(--line);background:var(--panel);padding:4px 12px;border-radius:3px;font-weight:700}
+.team .dot{width:14px;height:14px;border-radius:50%;border:2px solid var(--ink)}
+.team .pts{font-family:var(--display);font-size:1.25rem;font-variant-numeric:tabular-nums}
+.team.turn{border-color:var(--ink);box-shadow:3px 3px 0 var(--shadow)}
+.turnbanner{margin-top:14px;font-family:var(--display);font-weight:800;text-transform:uppercase;font-size:1.5rem;letter-spacing:.04em;display:flex;align-items:center;gap:10px}
+.turnbanner .dot{width:22px;height:22px;border-radius:50%;border:2.5px solid var(--ink)}
+.timer{height:8px;background:var(--steel-soft);margin-top:12px;border:1.5px solid var(--ink);overflow:hidden}
+.timer > div{height:100%;background:var(--hi);width:100%;transition:width .25s linear}
+.timer.low > div{background:var(--bad)}
+
+.qcard{margin-top:16px;background:var(--panel);border:2px solid var(--ink);box-shadow:8px 8px 0 var(--shadow);padding:22px 24px 24px}
+.qmeta{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.qtext{font-weight:700;font-size:clamp(1.25rem,2.5vw,1.6rem);line-height:1.35;margin:12px 0 0;max-width:62ch}
+.fig{margin-top:16px;border:2px solid var(--ink);background:var(--paper);padding:10px;max-width:520px;
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:18px 18px}
+.fig svg{max-height:270px;margin:0 auto}
+.fig.small{max-width:300px}
+.fig.table{max-width:560px;padding:0;background:var(--paper);overflow-x:auto}
+table.dia{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums;font-size:16px}
+table.dia th,table.dia td{border:1.5px solid var(--ink);padding:8px 10px;text-align:center}
+table.dia thead th{background:var(--ink);color:var(--paper);font-family:var(--display);text-transform:uppercase;letter-spacing:.04em;font-size:15px}
+table.dia tbody th{background:var(--hi-soft);text-align:left}
+table.dia caption{caption-side:bottom;font-family:var(--hand);font-size:16px;padding:6px;color:var(--ink-2)}
+.opts{margin-top:18px;display:grid;gap:10px}
+.opt{display:flex;align-items:flex-start;gap:12px;text-align:left;border:2px solid var(--ink);background:var(--paper);padding:12px 14px;border-radius:4px;font-size:1.06rem;line-height:1.4}
+.opt:hover:not(:disabled){background:var(--hi-soft)}
+.opt .l{flex:none;width:30px;height:30px;display:grid;place-items:center;border:2px solid var(--ink);font-family:var(--display);font-weight:800;font-size:1.1rem;background:var(--panel)}
+.opt:disabled{cursor:default}
+.opt.right{background:var(--ok-soft);border-color:var(--ok)}
+.opt.right .l{background:var(--ok);color:#fff;border-color:var(--ok)}
+.opt.wrong{background:var(--bad-soft);border-color:var(--bad)}
+.opt.wrong .l{background:var(--bad);color:#fff;border-color:var(--bad)}
+.opt.dim{opacity:.55}
+
+.fb{margin-top:18px;border:2px solid var(--ink);background:var(--paper)}
+.fb .head{padding:8px 14px;font-family:var(--display);font-weight:800;text-transform:uppercase;letter-spacing:.05em;font-size:1.3rem;color:#fff}
+.fb.good .head{background:var(--ok)} .fb.badf .head{background:var(--bad)}
+.fb .body{padding:12px 16px 16px;max-width:70ch}
+.fb .body p{margin:0 0 10px}
+.fb ol.steps{margin:6px 0 0;padding-left:0;list-style:none;counter-reset:s;display:grid;gap:10px}
+.fb ol.steps li{counter-increment:s;display:grid;grid-template-columns:32px 1fr;gap:10px}
+.fb ol.steps li::before{content:counter(s);width:28px;height:28px;display:grid;place-items:center;background:var(--hi);border:2px solid var(--ink);font-family:var(--display);font-weight:800}
+.fb .next{margin-top:12px;display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.kbd{font-size:13px;color:var(--ink-2)}
+
+/* Ordenar */
+.order{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
+.order h4{margin:0 0 8px;font-family:var(--display);text-transform:uppercase;letter-spacing:.06em;font-size:1rem;color:var(--ink-2)}
+.pool,.seq{display:grid;gap:8px;align-content:start;min-height:120px;padding:10px;border:2px dashed var(--line);background:var(--paper)}
+.seq{border-style:solid;border-color:var(--ink)}
+.chip{display:flex;gap:10px;align-items:flex-start;text-align:left;border:2px solid var(--ink);background:var(--panel);padding:9px 12px;border-radius:4px;font-size:1rem;line-height:1.35}
+.chip:hover:not(:disabled){background:var(--hi-soft)}
+.chip .n{flex:none;min-width:26px;height:26px;display:grid;place-items:center;background:var(--hi);border:2px solid var(--ink);font-family:var(--display);font-weight:800}
+.chip.right{background:var(--ok-soft);border-color:var(--ok)} .chip.wrong{background:var(--bad-soft);border-color:var(--bad)}
+.empty{color:var(--ink-2);font-family:var(--hand);font-size:18px;padding:8px}
+.correct-order{margin:8px 0 0;padding-left:22px}
+
+/* Final */
+.result{margin-top:16px;display:grid;grid-template-columns:1fr 1.2fr;gap:22px;align-items:start}
+.scorebox{background:var(--panel);border:2px solid var(--ink);box-shadow:8px 8px 0 var(--shadow);padding:20px 22px}
+.scorebox .big{font-family:var(--display);font-weight:800;font-size:4.4rem;line-height:1;font-variant-numeric:tabular-nums}
+.stamp{display:inline-block;margin-top:10px;font-family:var(--display);font-weight:800;text-transform:uppercase;letter-spacing:.08em;font-size:1.5rem;padding:4px 14px;border:3px solid currentColor;transform:rotate(-3deg)}
+.stamp.pass{color:var(--ok)} .stamp.fail{color:var(--bad)}
+.rank{margin-top:14px;display:grid;gap:6px}
+.rank .team{justify-content:space-between}
+.review{background:var(--panel);border:2px solid var(--ink);padding:16px 18px}
+.review h3{font-size:1.4rem;margin-bottom:8px}
+.review details{border-top:1.5px solid var(--line);padding:10px 0}
+.review summary{cursor:pointer;font-weight:700}
+.review .ans{margin:8px 0 0;color:var(--ok);font-weight:700}
+.review .why{margin:6px 0 0;color:var(--ink-2)}
+.rule{margin-top:16px;padding:12px 14px;border:2px solid var(--ink);background:var(--hi-soft);font-family:var(--hand);font-size:1.25rem;line-height:1.3}
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+
+footer{margin-top:40px;font-size:14px;color:var(--ink-2);max-width:75ch}
+
+@media (max-width:760px){
+  .hero{grid-template-columns:1fr}
+  .hero-art{order:-1}
+  .order{grid-template-columns:1fr}
+  .result{grid-template-columns:1fr}
+  .qcard{padding:16px}
+  body{font-size:16px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<style>
+/* Votación */
+.optrow{display:grid;grid-template-columns:1fr auto;gap:0;border:2px solid var(--ink);background:var(--paper);border-radius:4px;overflow:hidden;position:relative}
+.optrow .opt{border:0;border-radius:0;background:transparent;position:relative;z-index:1}
+.optrow .vbar{position:absolute;left:0;top:0;bottom:0;width:0;background:var(--hi-soft);transition:width .35s ease;z-index:0}
+.vc{display:flex;align-items:center;gap:6px;padding:6px 10px;border-left:2px solid var(--ink);background:var(--panel);position:relative;z-index:1}
+.vc button{width:34px;height:34px;border:2px solid var(--ink);background:var(--paper);font-weight:700;font-size:1.2rem;line-height:1;border-radius:3px}
+.vc button:hover:not(:disabled){background:var(--hi-soft)}
+.vc output{min-width:2.2ch;text-align:center;font-family:var(--display);font-weight:800;font-size:1.6rem;font-variant-numeric:tabular-nums}
+.vc .pc{font-family:var(--display);font-weight:700;font-size:1.05rem;color:var(--ink-2);min-width:4ch;text-align:right;font-variant-numeric:tabular-nums}
+.optrow.right{border-color:var(--ok)} .optrow.right .vbar{background:var(--ok-soft)}
+.optrow.right .l{background:var(--ok);color:#fff;border-color:var(--ok)}
+.optrow.wrong .vbar{background:var(--bad-soft)}
+.optrow.dim{opacity:.6}
+.votebar{margin-top:14px;display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center}
+.votebar .total{font-family:var(--display);font-weight:800;font-size:1.3rem;text-transform:uppercase;letter-spacing:.04em}
+.howto{grid-column:1/-1;margin:0;color:var(--ink-2);max-width:80ch}
+.slot.neutral{border:1.5px solid var(--ink);background:var(--steel-soft)}
+.soundbtn[aria-pressed="false"]{opacity:.7;text-decoration:line-through}
+@media (max-width:560px){ .vc{padding:4px 6px;gap:4px} .vc button{width:30px;height:30px} .vc .pc{display:none} }
+</style>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <filter id="rough" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="4" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="3.2" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    <marker id="ah" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#1E2226"/>
+    </marker>
+    <marker id="ahr" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#BE3328"/>
+    </marker>
+  </defs>
+</svg>
+
+<div class="hazard"></div>
+<div class="wrap" style="padding-block:12px 0;display:flex;justify-content:flex-end"><button type="button" class="btn fsbtn" id="fsBtn">Pantalla completa</button></div>
+<main class="wrap">
+
+  <section id="home">
+    <div class="hero">
+      <div>
+        <div class="eyebrow">Simulacro de examen · Operador de carretillas</div>
+        <h1>Carnet de <span>carretillero</span></h1>
+        <p>Un juego para toda la clase. Sale la pregunta, cada uno vota su respuesta y se apuntan los votos. Al destapar la solución se ve qué parte del grupo ha acertado y por qué. Si la mayoría acierta, arranca el motor; si falla, choque.</p>
+        <div class="machines">
+          <span class="tag"><i></i>Carretilla contrapesada</span>
+          <span class="tag"><i></i>Transpalé eléctrico</span>
+          <span class="tag"><i></i>Recogepedidos</span>
+        </div>
+      </div>
+      <div class="hero-art" id="heroArt"></div>
+    </div>
+
+    <div class="setup">
+      <h2>Ajustes de la partida</h2>
+      <p class="howto">Cómo se vota: la clase levanta la mano (o una tarjeta con A, B, C o D) y la persona que lleva el juego suma los votos con los botones + de cada respuesta, o con las teclas 1 a 4. Después pulsa «Ver respuesta».</p>
+      <div class="field">
+        <span class="lbl">Tiempo para votar</span>
+        <div class="seg" id="segTimer">
+          <button type="button" data-v="0" aria-pressed="true">Sin reloj</button>
+          <button type="button" data-v="1" aria-pressed="false">30 segundos</button>
+        </div>
+        <div class="hint">Al acabar el tiempo se destapa la respuesta.</div>
+      </div>
+      <div class="field">
+        <span class="lbl">Preguntas en el test</span>
+        <div class="seg" id="segCount">
+          <button type="button" data-v="10" aria-pressed="false">10</button>
+          <button type="button" data-v="15" aria-pressed="true">15</button>
+          <button type="button" data-v="20" aria-pressed="false">20</button>
+        </div>
+      </div>
+      <div class="field">
+        <span class="lbl">Sonido</span>
+        <div class="seg" id="segSound">
+          <button type="button" data-v="1" aria-pressed="true">Activado</button>
+          <button type="button" data-v="0" aria-pressed="false">Desactivado</button>
+        </div>
+        <div class="hint">Página, motor diésel al acertar y choque al fallar.</div>
+      </div>
+      <div class="field topics">
+        <span class="lbl">Temas del test</span>
+        <div class="seg" id="segTopic"></div>
+      </div>
+    </div>
+
+    <div class="modes">
+      <button type="button" class="mode" data-mode="test">
+        <div class="art" id="artTest"></div>
+        <div class="txt"><h3>Test de examen</h3><p>Preguntas sencillas de respuesta única, de todo el temario o del tema que elijáis.</p><span class="go"><b>Empezar</b></span></div>
+      </button>
+      <button type="button" class="mode" data-mode="look">
+        <div class="art" id="artLook"></div>
+        <div class="txt"><h3>Mira y responde</h3><p>Dibujos de máquinas, rampas, palancas y señales de seguridad. Hay que fijarse para saber si está bien o mal.</p><span class="go"><b>Empezar</b></span></div>
+      </button>
+      <button type="button" class="mode" data-mode="order">
+        <div class="art" id="artOrder"></div>
+        <div class="txt"><h3>Ordena la maniobra</h3><p>Entre todos, decidid el orden de los pasos para apilar, desapilar o dejar la carretilla al acabar.</p><span class="go"><b>Empezar</b></span></div>
+      </button>
+    </div>
+
+    <footer>Contenido basado en el manual del curso de operador de carretillas, el material de revisión de PRL y el texto sobre siniestralidad laboral. En el trabajo real manda siempre la placa y el manual del fabricante de cada máquina.</footer>
+  </section>
+
+  <section id="play" hidden>
+    <div class="topbar">
+      <h2 id="modeTitle">Test</h2>
+      <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+        <span class="counter" id="counter"></span>
+        <button type="button" class="btn fsbtn" id="fsBtn2">Pantalla completa</button>
+        <button type="button" class="btn soundbtn" id="soundBtn" aria-pressed="true">Sonido</button>
+        <button type="button" class="btn" id="quit">Salir</button>
+      </div>
+    </div>
+    <div class="rack" id="rack" aria-label="Estantería de progreso"></div>
+    <div class="timer" id="timer" hidden><div></div></div>
+    <div class="qcard" id="card"></div>
+  </section>
+
+  <section id="end" hidden>
+    <div class="topbar"><h2 id="endTitle">Resultado</h2></div>
+    <div class="rack" id="endRack"></div>
+    <div class="result">
+      <div>
+        <div class="scorebox" id="scorebox"></div>
+        <div class="rule" id="rule"></div>
+        <div class="actions">
+          <button type="button" class="btn primary" id="again">Otra partida</button>
+          <button type="button" class="btn" id="retryFails">Repasar las que fallamos</button>
+          <button type="button" class="btn dark" id="home2">Volver al inicio</button>
+        </div>
+      </div>
+      <div class="review" id="review"></div>
+    </div>
+  </section>
+</main>
+
+<script>
+/* ================= DIBUJOS ================= */
+function wrapSvg(vb, inner, label, texts=''){
+  return `<svg class="drw" viewBox="${vb}" role="img" aria-label="${label}"><g class="sk" filter="url(#rough)">${inner}</g>${texts}</svg>`;
+}
+function loadBox(x,y,w,h){
+  return `<rect class="w" x="${x-2}" y="${y+h}" width="${w+4}" height="9"/><path d="M${x+6} ${y+h}v9 M${x+w/2} ${y+h}v9 M${x+w-6} ${y+h}v9"/>
+  <rect class="k" x="${x}" y="${y}" width="${w}" height="${h}"/><path d="M${x} ${y+h*0.35} H${x+w} M${x+w/2} ${y} V${y+h}" stroke-width="1.4"/>`;
+}
+function forkliftG(o={}){
+  const {load=true, lift=0} = o;
+  return `<g>
+    <path class="g" d="M14 130 V88 Q14 80 24 80 H42 V130 Z"/>
+    <path class="y" d="M30 130 V84 Q30 76 42 75 L64 74 L66 56 L84 56 L90 74 H134 L140 130 Z"/>
+    <path d="M44 96 H56 M44 104 H56" stroke-width="1.6"/>
+    <path d="M66 74 L72 14 H140 L136 74"/>
+    <line x1="70" y1="14" x2="142" y2="14" stroke-width="4.5"/>
+    <circle class="w" cx="99" cy="37" r="8"/>
+    <path d="M98 45 L94 66 M95 53 L113 54 M94 66 L113 68"/>
+    <path d="M110 72 L119 50" stroke-width="3"/>
+    <path class="g" d="M142 8 H153 V144 H142 Z"/>
+    <path d="M147.5 8 V144" stroke-width="1.4"/>
+    <g transform="translate(0,${-lift})">
+      <path d="M153 128 V${144}" stroke-width="1"/>
+      <rect class="w" x="153" y="58" width="7" height="82"/>
+      <path d="M153 58 V36 M160 58 V36 M153 36 H160 M153 46 H160"/>
+      <path class="d" d="M156 136 H216 L218 141 H156 Z"/>
+      ${load ? loadBox(164,94,50,33) : ''}
+    </g>
+    <circle class="g" cx="50" cy="132" r="17"/><circle class="w" cx="50" cy="132" r="6"/>
+    <circle class="g" cx="122" cy="130" r="20"/><circle class="w" cx="122" cy="130" r="7"/>
+  </g>`;
+}
+function drawContra(o={}){
+  return wrapSvg('0 0 236 162', `<path d="M4 152 H232" stroke-dasharray="7 7" stroke-width="1.6"/>${forkliftG(o)}`, 'Dibujo de una carretilla frontal contrapesada con carga');
+}
+function transpaleG(load=true){
+  return `<g>
+    <path d="M44 86 L20 30" stroke-width="5.5"/>
+    <path class="g" d="M6 22 L32 17 L36 31 L11 36 Z"/>
+    <circle class="badf" cx="22" cy="24" r="3"/>
+    <path class="y" d="M28 86 H86 L88 142 H24 Z"/>
+    <rect class="g" x="34" y="96" width="44" height="20"/>
+    <path d="M40 106 H72" stroke-width="1.4"/>
+    <rect class="w" x="86" y="98" width="6" height="38"/>
+    <path class="d" d="M88 136 H214 L216 142 H88 Z"/>
+    <circle class="g" cx="48" cy="145" r="11"/><circle class="w" cx="48" cy="145" r="4"/>
+    <circle class="w" cx="204" cy="147" r="4"/>
+    ${load ? loadBox(98,82,104,42) : ''}
+  </g>`;
+}
+function drawTransp(load=true){
+  return wrapSvg('0 0 224 160', `<path d="M2 154 H222" stroke-dasharray="7 7" stroke-width="1.6"/>${transpaleG(load)}`, 'Dibujo de un transpalé eléctrico con timón');
+}
+function drawRecoge(){
+  return wrapSvg('0 0 230 170', `
+    <path d="M2 162 H228" stroke-dasharray="7 7" stroke-width="1.6"/>
+    <path d="M160 12 V160 M220 12 V160 M160 56 H220 M160 104 H220" stroke-width="2.2"/>
+    <rect class="k" x="168" y="30" width="22" height="26"/><rect class="k" x="194" y="36" width="20" height="20"/>
+    <rect class="k" x="170" y="80" width="40" height="24"/>
+    <rect class="g" x="22" y="8" width="13" height="120"/>
+    <path d="M28.5 8 V128" stroke-width="1.4"/>
+    <rect class="y" x="35" y="64" width="78" height="10"/>
+    <path d="M40 64 V36 H110 V64 M40 50 H110" />
+    <rect class="w" x="88" y="38" width="16" height="11"/>
+    <circle class="w" cx="68" cy="22" r="8"/>
+    <path d="M68 30 V54 M68 54 L62 64 M68 54 L74 64 M68 38 L88 42"/>
+    <circle class="badf" cx="40" cy="14" r="3.5"/>
+    <path d="M68 36 Q52 30 41 16" stroke-dasharray="4 4" stroke-width="2"/>
+    <path class="y" d="M14 160 V128 H74 L78 160 Z"/>
+    <path class="d" d="M76 154 H148 L150 160 H76 Z"/>
+    <circle class="g" cx="32" cy="160" r="9"/><circle class="w" cx="140" cy="162" r="3.5"/>
+  `, 'Dibujo de una recogepedidos con el operador elevado en la plataforma y arnés anclado',
+  `<text x="48" y="12" style="font-size:14px">anclaje</text>`);
+}
+function drawBalancin(){
+  return wrapSvg('0 0 330 190', `
+    <path class="d" d="M165 128 L148 158 L182 158 Z"/>
+    <path d="M10 160 H320" stroke-width="1.6"/>
+    <rect class="k" x="26" y="120" width="278" height="8"/>
+    <rect class="y" x="44" y="76" width="74" height="44"/>
+    <path d="M44 98 H118" stroke-width="1.4"/>
+    <rect class="k" x="222" y="88" width="56" height="32"/>
+    <path d="M222 100 H278 M250 88 V120" stroke-width="1.4"/>
+    <path d="M81 140 H162" marker-start="url(#ah)" marker-end="url(#ah)" stroke-width="1.8"/>
+    <path d="M168 140 H248" marker-start="url(#ah)" marker-end="url(#ah)" stroke-width="1.8"/>
+  `, 'Balancín: peso de la carretilla y peso de la carga a cada lado del eje delantero',
+  `<text x="62" y="70">carretilla Q</text><text x="226" y="82">carga P</text>
+   <text x="112" y="182">L</text><text x="204" y="182">l</text>
+   <text x="118" y="30" class="big">Q × L ≥ P × l</text>
+   <text x="134" y="176" style="font-size:14px">eje delantero</text>`);
+}
+function drawTriangulo(){
+  return wrapSvg('0 0 270 252', `
+    <path d="M104 46 V8 M156 46 V8" stroke-width="5"/>
+    <rect class="ys" x="74" y="44" width="112" height="150" rx="10"/>
+    <rect class="g" x="58" y="56" width="16" height="36" rx="3"/><rect class="g" x="186" y="56" width="16" height="36" rx="3"/>
+    <rect class="g" x="84" y="164" width="14" height="26" rx="3"/><rect class="g" x="162" y="164" width="14" height="26" rx="3"/>
+    <path d="M98 177 H162" stroke-width="2"/>
+    <path d="M66 74 L194 74 L130 177 Z" stroke-dasharray="8 6" stroke-width="2.6"/>
+    <circle class="d" cx="130" cy="177" r="5"/>
+    <circle class="okf" cx="130" cy="112" r="8"/>
+    <circle class="badf" cx="214" cy="128" r="8"/>
+    <path d="M140 116 L202 126" stroke="#BE3328" marker-end="url(#ahr)" stroke-dasharray="5 4"/>
+  `, 'Vista desde arriba del triángulo de estabilidad de una carretilla contrapesada',
+  `<text x="166" y="24" style="font-size:15px">DELANTE</text>
+   <text x="6" y="244" class="ok">● dentro: estable</text>
+   <text x="150" y="244" class="bad">● fuera: vuelca</text>
+   <text x="86" y="214" style="font-size:14px">pivote trasero (eje oscilante)</text>`);
+}
+function drawPlaca(){
+  return `<svg class="drw" viewBox="0 0 320 190" role="img" aria-label="Placa de características de una carretilla">
+    <g class="sk" filter="url(#rough)"><rect class="g" x="10" y="10" width="300" height="170" rx="10"/>
+    <circle class="w" cx="26" cy="26" r="4"/><circle class="w" cx="294" cy="26" r="4"/><circle class="w" cx="26" cy="164" r="4"/><circle class="w" cx="294" cy="164" r="4"/>
+    <path d="M30 52 H290" stroke-width="1.6"/></g>
+    <text x="40" y="44" style="font-size:16px">CARRETILLA ELEVADORA · EJEMPLO</text>
+    <text x="40" y="80">Capacidad nominal ........ 2.000 kg</text>
+    <text x="40" y="106">Centro de carga ............ 500 mm</text>
+    <text x="40" y="132">Altura máx. elevación ... 3.000 mm</text>
+    <text x="40" y="158">Peso en vacío ............... 3.400 kg</text>
+  </svg>`;
+}
+function drawTalon(){
+  return wrapSvg('0 0 330 200', `
+    <rect class="g" x="56" y="14" width="12" height="144"/>
+    <path class="d" d="M56 152 H296 L300 160 H56 Z"/>
+    <rect class="k" x="70" y="76" width="150" height="76"/>
+    <path d="M70 100 H220" stroke-width="1.4"/>
+    <circle class="d" cx="145" cy="114" r="5"/>
+    <circle cx="68" cy="152" r="11" stroke="#BE3328" stroke-width="2.4"/>
+    <path d="M68 178 H145" marker-start="url(#ah)" marker-end="url(#ah)" stroke-width="1.8"/>
+    <path d="M68 166 V186 M145 120 V186" stroke-dasharray="3 4" stroke-width="1.4"/>
+  `, 'Horquilla con el talón marcado y la distancia d al centro de gravedad de la carga',
+  `<text x="8" y="146" class="bad">talón</text><text x="152" y="110" style="font-size:15px">centro de gravedad</text><text x="86" y="198">d = 500 mm</text>`);
+}
+function drawRampa(kind){
+  // up: la carretilla mira hacia arriba de la rampa · dir: sentido de la marcha
+  const cfg = {
+    sube:{up:true,load:true,dir:'up'}, subeMal:{up:false,load:true,dir:'up'},
+    baja:{up:true,load:true,dir:'down'}, mal:{up:false,load:true,dir:'down'},
+    vacio:{up:false,load:false,dir:'down'}, vacioMal:{up:true,load:false,dir:'down'}
+  }[kind];
+  const t = `translate(150,165) rotate(-18) scale(${cfg.up?0.78:-0.78},0.78) translate(-115,-152)`;
+  const arrow = cfg.dir==='up' ? '<path d="M60 120 L250 58" marker-end="url(#ah)" stroke-width="2.4"/>' : '<path d="M250 58 L60 120" marker-end="url(#ah)" stroke-width="2.4"/>';
+  const label = `<text x="40" y="40">${cfg.dir==='up'?'subiendo':'bajando'} ${cfg.load?'con carga':'sin carga'}</text>`;
+  return wrapSvg('0 0 360 220', `
+    <path class="c" d="M6 214 L354 101 L354 214 Z"/>
+    <path d="M6 214 L354 101" stroke-width="2.6"/>
+    ${arrow}
+    <g transform="${t}">${forkliftG({load:cfg.load})}</g>
+  `, 'Carretilla en una rampa', `${label}<text x="270" y="200" style="font-size:15px">arriba →</text>`);
+}
+function drawCircula(kind){
+  // baja: carga baja · alta: carga elevada · persona: alguien subido en las horquillas
+  const lift = kind==='alta' ? 48 : 6;
+  const load = kind!=='persona';
+  const person = kind==='persona' ? `<circle class="w" cx="196" cy="84" r="8"/><path d="M196 92 V116 M196 116 L190 134 M196 116 L203 134 M196 98 L184 108 M196 98 L208 106"/>` : '';
+  return wrapSvg('0 0 262 175', `
+    <path d="M4 158 H258" stroke-width="2"/>
+    <path d="M2 70 H24 M6 92 H28 M2 114 H22" stroke-width="2"/>
+    <g transform="translate(30,6)">${forkliftG({load, lift})}${person ? `<g>${person}</g>` : ''}</g>
+  `, 'Carretilla circulando por el almacén', `<text x="30" y="172" style="font-size:15px">circulando →</text>`);
+}
+function drawPanel(){
+  const xs=[60,150,240];
+  const lever = x=>`<path d="M${x} 120 L${x-8} 52" stroke-width="7"/><circle class="d" cx="${x-9}" cy="44" r="11"/>`;
+  const plate = x=>`<rect class="w" x="${x-36}" y="126" width="72" height="44" rx="4"/>`;
+  const p1 = x=>`<path d="M${x-18} 132 V160 H${x+6}" stroke-width="3.4"/><path d="M${x+20} 162 V134" stroke-width="2.4" marker-start="url(#ah)" marker-end="url(#ah)"/>`;
+  const p2 = x=>`<path d="M${x-16} 162 L${x-8} 132" stroke-width="3.4"/><path d="M${x-16} 162 H${x+4}" stroke-width="3.4"/><path d="M${x+2} 134 Q${x+22} 140 ${x+18} 160" stroke-width="2.4" marker-start="url(#ah)" marker-end="url(#ah)"/>`;
+  const p3 = x=>`<path d="M${x-8} 130 V150 H${x+12}" stroke-width="3.4"/><path d="M${x-26} 160 H${x+26}" stroke-width="2.4" marker-start="url(#ah)" marker-end="url(#ah)"/>`;
+  return wrapSvg('0 0 300 200', `
+    <rect class="g" x="10" y="116" width="280" height="62" rx="6"/>
+    ${xs.map(lever).join('')}
+    ${xs.map(plate).join('')}
+    ${p1(xs[0])}${p2(xs[1])}${p3(xs[2])}
+  `, 'Panel de tres palancas hidráulicas con sus pictogramas',
+  `<text x="52" y="22" class="big">1</text><text x="142" y="22" class="big">2</text><text x="232" y="22" class="big">3</text>`);
+}
+/* ---- Señales de PRL ---- */
+const PICTO = {
+  carretilla:c=>`<g fill="${c}"><rect x="16" y="48" width="9" height="24"/><path d="M24 72 V50 H40 L44 40 H58 V72 Z"/><rect x="61" y="22" width="6" height="52"/><rect x="66" y="69" width="22" height="5"/><circle cx="32" cy="76" r="7"/><circle cx="54" cy="76" r="7"/></g><path d="M42 50 L46 28 H63" stroke="${c}" stroke-width="4" fill="none"/>`,
+  persona:c=>`<g stroke="${c}" stroke-width="8" stroke-linecap="round" fill="none"><path d="M50 32 L46 56"/><path d="M49 36 L37 48 M49 36 L62 46"/><path d="M46 56 L36 80 M46 56 L58 74 L66 80"/></g><circle cx="53" cy="20" r="8" fill="${c}"/>`,
+  bota:c=>`<path fill="${c}" d="M30 20 H54 V56 L74 62 Q82 65 82 74 V82 H30 Z"/>`,
+  chaleco:(c,bg)=>`<path fill="${c}" d="M34 18 L44 18 L50 32 L56 18 L66 18 L76 30 L72 82 H28 L24 30 Z"/><rect x="29" y="56" width="42" height="5" fill="${bg}"/><rect x="29" y="67" width="42" height="5" fill="${bg}"/>`,
+  gafas:(c,bg)=>`<circle cx="50" cy="52" r="30" fill="${c}"/><rect x="30" y="40" width="17" height="13" rx="4" fill="${bg}"/><rect x="53" y="40" width="17" height="13" rx="4" fill="${bg}"/><path d="M47 45 H53" stroke="${c}" stroke-width="3"/>`,
+  oidos:c=>`<circle cx="50" cy="54" r="22" fill="none" stroke="${c}" stroke-width="5"/><path d="M22 52 Q50 4 78 52" fill="none" stroke="${c}" stroke-width="6"/><rect x="15" y="42" width="14" height="26" rx="5" fill="${c}"/><rect x="71" y="42" width="14" height="26" rx="5" fill="${c}"/>`,
+  cigarro:c=>`<rect x="18" y="58" width="48" height="11" fill="${c}"/><rect x="69" y="58" width="11" height="11" fill="${c}"/><path d="M74 52 Q66 44 74 36 Q82 28 74 18" fill="none" stroke="${c}" stroke-width="4"/>`,
+  rayo:c=>`<path fill="${c}" d="M58 14 L30 56 H48 L40 88 L72 42 H54 Z"/>`,
+  llama:c=>`<path fill="${c}" d="M50 14 C64 32 74 46 70 64 C68 76 58 84 50 84 C40 84 30 76 30 62 C30 50 38 44 42 34 C46 44 48 48 52 48 C56 40 54 28 50 14 Z"/>`,
+  colgada:c=>`<g stroke="${c}" stroke-width="4" fill="none"><path d="M50 8 V28"/><path d="M50 28 L32 52 M50 28 L68 52"/></g><rect x="26" y="52" width="48" height="30" fill="${c}"/>`,
+  extintor:c=>`<rect x="40" y="34" width="22" height="50" rx="7" fill="${c}"/><rect x="45" y="24" width="12" height="11" fill="${c}"/><path d="M57 28 Q76 28 72 52" fill="none" stroke="${c}" stroke-width="4"/><path d="M46 26 L36 18" stroke="${c}" stroke-width="4"/>`,
+};
+function drawSign(kind, picto){
+  const INK='#1E2226', RED='#BE3328', BLUE='#1E5EA6', YEL='#F2B200', W='#FFFFFF';
+  let frame='', inner='', top='';
+  if(kind==='adv'){ frame=`<path d="M50 6 L96 88 H4 Z" fill="${YEL}" stroke="${INK}" stroke-width="6" stroke-linejoin="round"/>`; inner=`<g transform="translate(27,38) scale(0.46)">${PICTO[picto](INK, YEL)}</g>`; }
+  if(kind==='proh'){ frame=`<circle cx="50" cy="50" r="43" fill="${W}" stroke="${RED}" stroke-width="9"/>`; inner=`<g transform="translate(16,16) scale(0.68)">${PICTO[picto](INK, W)}</g>`; top=`<path d="M20 20 L80 80" stroke="${RED}" stroke-width="9"/>`; }
+  if(kind==='obl'){ frame=`<circle cx="50" cy="50" r="46" fill="${BLUE}"/>`; inner=`<g transform="translate(14,14) scale(0.72)">${PICTO[picto](W, BLUE)}</g>`; }
+  if(kind==='fuego'){ frame=`<rect x="6" y="6" width="88" height="88" rx="6" fill="${RED}"/>`; inner=`<g transform="translate(10,10) scale(0.8)">${PICTO[picto](W, RED)}</g>`; }
+  return `<svg class="drw" viewBox="0 0 100 100" role="img" aria-label="Señal de seguridad"><g filter="url(#rough)">${frame}${inner}${top}</g></svg>`;
+}
+function drawQuince(){
+  return wrapSvg('0 0 260 175', `
+    <path d="M4 152 H256" stroke-width="2"/>
+    ${forkliftG({load:true, lift:6})}
+    <path d="M236 132 V152" marker-start="url(#ah)" marker-end="url(#ah)" stroke-width="1.8"/>
+    <path d="M160 24 Q140 10 124 22" marker-end="url(#ah)" stroke-width="2"/>
+  `, 'Carretilla circulando con la carga baja y el mástil inclinado hacia atrás',
+  `<text x="200" y="172">≈ 15 cm</text><text x="150" y="14" style="font-size:15px">mástil atrás</text>`);
+}
+/* ================= SONIDOS (sintetizados, sin archivos) ================= */
+const Snd = {
+  ctx:null, out:null, on:true,
+  init(){
+    if(!this.on) return null;
+    try{
+      if(!this.ctx){
+        const AC = window.AudioContext || window.webkitAudioContext; if(!AC) return null;
+        this.ctx = new AC();
+        const comp = this.ctx.createDynamicsCompressor();
+        comp.threshold.value = -14; comp.ratio.value = 4;
+        this.out = this.ctx.createGain(); this.out.gain.value = 0.9;
+        this.out.connect(comp); comp.connect(this.ctx.destination);
+      }
+      if(this.ctx.state === 'suspended') this.ctx.resume();
+      return this.ctx;
+    }catch(e){ return null; }
+  },
+  noiseBuf(dur){
+    const c=this.ctx, b=c.createBuffer(1, Math.ceil(c.sampleRate*dur), c.sampleRate), d=b.getChannelData(0);
+    for(let i=0;i<d.length;i++) d[i]=Math.random()*2-1;
+    return b;
+  },
+  noise(dur){ const s=this.ctx.createBufferSource(); s.buffer=this.noiseBuf(dur); return s; },
+  // Pasar página: dos roces de papel
+  page(){
+    const c=this.init(); if(!c) return;
+    const t0=c.currentTime;
+    [0, 0.11].forEach((dt,k)=>{
+      const n=this.noise(0.3), f=c.createBiquadFilter(), g=c.createGain();
+      f.type='bandpass'; f.Q.value=0.9;
+      f.frequency.setValueAtTime(900, t0+dt); f.frequency.exponentialRampToValueAtTime(4500, t0+dt+0.18);
+      g.gain.setValueAtTime(0.0001, t0+dt);
+      g.gain.exponentialRampToValueAtTime(k?0.22:0.35, t0+dt+0.03);
+      g.gain.exponentialRampToValueAtTime(0.0001, t0+dt+0.24);
+      n.connect(f); f.connect(g); g.connect(this.out);
+      n.start(t0+dt); n.stop(t0+dt+0.3);
+    });
+  },
+  // Acierto: arranque y acelerón de un motor diésel de carretilla
+  engine(){
+    const c=this.init(); if(!c) return;
+    const t0=c.currentTime, T=2.6;
+    const master=c.createGain();
+    master.gain.setValueAtTime(0.0001,t0);
+    master.gain.exponentialRampToValueAtTime(0.7,t0+0.08);
+    master.gain.setValueAtTime(0.7,t0+T-0.5);
+    master.gain.exponentialRampToValueAtTime(0.0001,t0+T);
+    master.connect(this.out);
+    // Pulsos de combustión: modulador de amplitud
+    const am=c.createGain(); am.gain.value=0.45;
+    const lfo=c.createOscillator(), lfoG=c.createGain();
+    lfo.type='square'; lfoG.gain.value=0.45;
+    lfo.frequency.setValueAtTime(5,t0);          // motor de arranque
+    lfo.frequency.setValueAtTime(5,t0+0.35);
+    lfo.frequency.linearRampToValueAtTime(13,t0+0.55); // arranca
+    lfo.frequency.linearRampToValueAtTime(30,t0+1.15); // acelerón
+    lfo.frequency.linearRampToValueAtTime(15,t0+2.0);  // ralentí
+    lfo.connect(lfoG); lfoG.connect(am.gain);
+    // Tono grave del motor
+    const o1=c.createOscillator(), o2=c.createOscillator();
+    o1.type='sawtooth'; o2.type='square';
+    const fq=[[0,32],[0.35,32],[0.55,44],[1.15,78],[2.0,48]];
+    fq.forEach(([dt,f],i)=>{ i? o1.frequency.linearRampToValueAtTime(f,t0+dt) : o1.frequency.setValueAtTime(f,t0); });
+    fq.forEach(([dt,f],i)=>{ i? o2.frequency.linearRampToValueAtTime(f*0.502,t0+dt) : o2.frequency.setValueAtTime(f*0.502,t0); });
+    const lp=c.createBiquadFilter(); lp.type='lowpass'; lp.Q.value=4;
+    lp.frequency.setValueAtTime(260,t0); lp.frequency.linearRampToValueAtTime(700,t0+1.15); lp.frequency.linearRampToValueAtTime(350,t0+2.0);
+    const g12=c.createGain(); g12.gain.value=0.55;
+    o1.connect(g12); o2.connect(g12); g12.connect(lp); lp.connect(am);
+    // Traqueteo diésel: ruido filtrado
+    const n=this.noise(T), nf=c.createBiquadFilter(), ng=c.createGain();
+    nf.type='lowpass'; nf.frequency.setValueAtTime(500,t0); nf.frequency.linearRampToValueAtTime(1400,t0+1.15); nf.frequency.linearRampToValueAtTime(700,t0+2.0);
+    ng.gain.value=0.35; n.connect(nf); nf.connect(ng); ng.connect(am);
+    am.connect(master);
+    [o1,o2,lfo,n].forEach(x=>{x.start(t0); x.stop(t0+T+0.05);});
+  },
+  // Fallo: golpe contra la estantería y chapa
+  crash(){
+    const c=this.init(); if(!c) return;
+    const t0=c.currentTime;
+    // Golpe grave
+    const th=c.createOscillator(), tg=c.createGain();
+    th.type='sine'; th.frequency.setValueAtTime(120,t0); th.frequency.exponentialRampToValueAtTime(38,t0+0.35);
+    tg.gain.setValueAtTime(1.0,t0); tg.gain.exponentialRampToValueAtTime(0.0001,t0+0.45);
+    th.connect(tg); tg.connect(this.out); th.start(t0); th.stop(t0+0.5);
+    // Estruendo
+    const n=this.noise(1.2), f=c.createBiquadFilter(), g=c.createGain();
+    f.type='lowpass'; f.frequency.setValueAtTime(5000,t0); f.frequency.exponentialRampToValueAtTime(500,t0+0.9);
+    g.gain.setValueAtTime(0.0001,t0); g.gain.exponentialRampToValueAtTime(0.9,t0+0.01); g.gain.exponentialRampToValueAtTime(0.0001,t0+1.1);
+    n.connect(f); f.connect(g); g.connect(this.out); n.start(t0); n.stop(t0+1.2);
+    // Chapa metálica que vibra
+    [233,397,611,887,1310,1960].forEach((fr,i)=>{
+      const o=c.createOscillator(), og=c.createGain();
+      o.type = i%2 ? 'triangle':'sine'; o.frequency.value = fr*(0.98+Math.random()*0.04);
+      og.gain.setValueAtTime(0.0001,t0); og.gain.exponentialRampToValueAtTime(0.12/(1+i*0.3),t0+0.01);
+      og.gain.exponentialRampToValueAtTime(0.0001,t0+0.7+Math.random()*0.7);
+      o.connect(og); og.connect(this.out); o.start(t0); o.stop(t0+1.5);
+    });
+    // Cajas que caen después
+    for(let k=0;k<5;k++){
+      const dt=0.18+k*0.09+Math.random()*0.06, b=this.noise(0.12), bf=c.createBiquadFilter(), bg=c.createGain();
+      bf.type='bandpass'; bf.frequency.value=300+Math.random()*900; bf.Q.value=1.5;
+      bg.gain.setValueAtTime(0.0001,t0+dt); bg.gain.exponentialRampToValueAtTime(0.5-k*0.07,t0+dt+0.005); bg.gain.exponentialRampToValueAtTime(0.0001,t0+dt+0.1);
+      b.connect(bf); bf.connect(bg); bg.connect(this.out); b.start(t0+dt); b.stop(t0+dt+0.12);
+    }
+  }
+};
+
+/* ================= DATOS ================= */
+const TOPICS = [
+  {k:'all', n:'Todo el temario'},
+  {k:'contra', n:'Contrapesada'},
+  {k:'transp', n:'Transpalé eléctrico'},
+  {k:'recoge', n:'Recogepedidos'},
+  {k:'estab', n:'Estabilidad'},
+  {k:'cond', n:'Conducción y rampas'},
+  {k:'carga', n:'Manipular cargas'},
+  {k:'normas', n:'Normas y mantenimiento'},
+  {k:'mandos', n:'Palancas y mandos'},
+  {k:'senales', n:'Señales de seguridad'},
+];
+const TOPIC_NAME = Object.fromEntries(TOPICS.map(t=>[t.k,t.n]));
+const IMG = {
+  contra:()=>drawContra(), transp:()=>drawTransp(), recoge:()=>drawRecoge(),
+  balancin:()=>drawBalancin(), triangulo:()=>drawTriangulo(), placa:()=>drawPlaca(), talon:()=>drawTalon(),
+  rampaSube:()=>drawRampa('sube'), rampaBaja:()=>drawRampa('baja'), rampaMal:()=>drawRampa('mal'), rampaVacio:()=>drawRampa('vacio'),
+  quince:()=>drawQuince(),
+  rampaSubeMal:()=>drawRampa('subeMal'), rampaVacioMal:()=>drawRampa('vacioMal'),
+  circulaBaja:()=>drawCircula('baja'), circulaAlta:()=>drawCircula('alta'), circulaPersona:()=>drawCircula('persona'),
+  panel:()=>drawPanel(),
+};
+// La primera opción es la correcta (se barajan al mostrarlas)
+const Q = (t,q,o,e,img)=>({type:'mc',t,q,o,e,img});
+const BANK = [
+  // ---- Normas y mantenimiento
+  Q('normas','¿Quién puede conducir una carretilla en la empresa?',
+    ['Quien tiene la formación y la autorización de la empresa','Cualquiera que tenga carnet de coche','Cualquiera, si va despacio'],
+    'Para conducir una carretilla hace falta formación específica, teórica y práctica, y además la autorización por escrito de la empresa. El carnet de coche no sirve.'),
+  Q('normas','¿Cuándo tiene que formarte la empresa?',
+    ['Al contratarte y cuando cambie tu trabajo o tu máquina','Nunca, la formación la pagas tú','Solo si tienes un accidente'],
+    'Lo dice la Ley de Prevención de Riesgos Laborales: la formación se da al entrar y cada vez que cambian tus funciones o los equipos que usas.'),
+  Q('normas','¿De qué es responsable el conductor de la carretilla?',
+    ['Del vehículo, de la carga y de las personas e instalaciones','Solo del vehículo','De nada, si sigue órdenes'],
+    'Al subir a la carretilla te haces responsable de las tres cosas a la vez. En el examen, la respuesta a esta pregunta es «todas».'),
+  Q('normas','¿Qué es mejor en un carretillero?',
+    ['Trabajar a ritmo constante y sin errores','Ser el más rápido del almacén','Llevar la carga alta para ver mejor'],
+    'Rapidez no es lo mismo que eficacia. Lo que se gana corriendo se pierde en el primer golpe.'),
+  Q('normas','¿Qué haces antes de empezar a trabajar con la carretilla?',
+    ['Una revisión rápida: frenos, dirección, bocina, luces, fugas y neumáticos','Nada, ya la revisó el turno anterior','Arrancar y probarla con carga'],
+    'Son cinco minutos que evitan muchas averías peligrosas. Esta revisión diaria la hace el propio conductor.'),
+  Q('normas','En la revisión ves que el freno va mal. ¿Qué haces?',
+    ['No la uso y aviso al responsable','La uso con cuidado hasta el final del turno','La arreglo yo mismo'],
+    'Si la máquina no está bien, no se usa. Se avisa y se anota. Reparar no te corresponde si no es tu tarea.'),
+  Q('normas','¿Cada cuánto revisa la carretilla a fondo el servicio técnico?',
+    ['Cada 6 meses o 1.000 horas','Cada día','Cada 10 años'],
+    'La revisión diaria la hace el conductor. La revisión a fondo de motor, frenos, hidráulica y cadenas la hace el servicio técnico cada 6 meses o 1.000 horas.'),
+  Q('normas','¿Qué gas peligroso suelta la batería mientras se carga?',
+    ['Hidrógeno, que es inflamable','Oxígeno','Ninguno'],
+    'Por eso la zona de carga de baterías debe estar ventilada y está prohibido fumar o acercar llamas.'),
+  Q('normas','¿Qué te pones para manipular la batería?',
+    ['Gafas y guantes','Nada, está apagada','Solo el chaleco'],
+    'La batería lleva ácido. Una salpicadura quema la piel o los ojos.'),
+  Q('normas','¿Se pueden dejar herramientas encima de la batería?',
+    ['No, pueden provocar un cortocircuito','Sí, es un buen sitio','Sí, si son pequeñas'],
+    'Una llave metálica que toque dos bornes provoca chispas y calor. Encima de la batería no se deja nada.'),
+  Q('normas','¿Cómo dejas la carretilla al acabar la jornada?',
+    ['En su sitio, horquillas en el suelo, freno echado y sin llave','En el pasillo con la llave puesta','Con las horquillas levantadas'],
+    'Horquillas al suelo para que nadie tropiece, freno de estacionamiento, motor parado y llave quitada para que nadie sin autorización la use.'),
+  Q('normas','¿Dónde no puedes dejar aparcada la carretilla?',
+    ['Delante de una salida de emergencia o un extintor','En la zona de aparcamiento','Junto a su cargador'],
+    'En una emergencia, esa salida o ese extintor pueden salvar vidas. Nunca se tapan.'),
+  Q('normas','¿Puedes pasar por debajo de unas horquillas levantadas si están vacías?',
+    ['No, nunca','Sí, si están vacías','Sí, si vas rápido'],
+    'El hidráulico puede fallar o alguien puede tocar una palanca. Por debajo de las horquillas no se pasa nunca.'),
+  Q('normas','¿Cómo se reposta una carretilla diésel?',
+    ['Con el motor parado, en el sitio previsto y sin fumar','Con el motor en marcha','En cualquier rincón del almacén'],
+    'El combustible y sus vapores arden con una chispa. Si se derrama algo, se seca antes de arrancar.'),
+  Q('normas','¿Dónde se miran los kilos que puede levantar la carretilla?',
+    ['En la placa de características','En el manual de otra máquina','Se calcula a ojo'],
+    'Cada carretilla lleva una placa del fabricante con su capacidad de carga. Tiene que estar visible y legible.'),
+
+  // ---- Contrapesada
+  Q('contra','En la carretilla contrapesada, ¿qué ruedas mueve el volante?',
+    ['Las de atrás','Las de delante','Las cuatro'],
+    'La dirección está atrás. Por eso, al girar, la parte trasera se abre mucho: cuidado con quien esté al lado.'),
+  Q('contra','¿Para qué sirve el contrapeso de atrás?',
+    ['Para equilibrar el peso de la carga','Para ir más rápido','Para llevar a un compañero'],
+    'La carga va delante y el contrapeso detrás, como en un balancín. Gracias a él la carretilla no se levanta por detrás.'),
+  Q('contra','¿Para qué sirve el techo de la cabina (pórtico de seguridad)?',
+    ['Para protegerte si cae algo o si la máquina vuelca','Para dar sombra','Para colgar herramientas'],
+    'Te protege de las cajas que caen y, en un vuelco, evita que quedes aplastado. Pero solo si estás dentro.'),
+  Q('contra','La carretilla empieza a volcar. ¿Qué haces?',
+    ['Me quedo dentro, me agarro fuerte y me inclino al lado contrario','Salto fuera rápido','Suelto el volante'],
+    'Saltar es lo que causa más muertes: el conductor cae y el pórtico le aplasta. Dentro, con el cinturón, el pórtico te protege.'),
+  Q('contra','¿Por qué hay que llevar siempre el cinturón puesto?',
+    ['Para no salir despedido si vuelca','Porque lo pide la policía','Solo hace falta en la calle'],
+    'El cinturón te mantiene debajo del pórtico, que es la zona protegida.'),
+  Q('contra','En un almacén cerrado y con poca ventilación, ¿qué carretilla usarías?',
+    ['Eléctrica','Diésel','De gas'],
+    'La eléctrica no echa humos. Las diésel y de gas sueltan gases tóxicos y en interiores necesitan buena ventilación.'),
+  Q('contra','¿Qué gas peligroso echa una carretilla diésel?',
+    ['Monóxido de carbono, que no se ve ni se huele','Hidrógeno','Vapor de agua'],
+    'Como no se ve ni se huele, cuando notas el mareo ya llevas tiempo respirándolo.'),
+  Q('contra','¿Dónde es mejor usar una carretilla diésel?',
+    ['En exteriores, como patios y muelles abiertos','En una cámara frigorífica cerrada','Dentro de una tienda'],
+    'Tiene mucha potencia y autonomía, y al aire libre los gases se dispersan.'),
+  Q('contra','¿Para qué sirve el respaldo (la rejilla) de las horquillas?',
+    ['Para que la carga no caiga hacia el conductor','Para enganchar remolques','Para apoyar los pies'],
+    'Cuando el mástil se inclina hacia atrás, la carga se apoya en el respaldo y no se va hacia la cabina.'),
+
+  // ---- Transpalé eléctrico
+  Q('transp','¿Para qué sirve el botón «panza» de la punta del timón?',
+    ['Para que la máquina cambie de sentido si te atrapa','Para tocar la bocina','Para subir las horquillas'],
+    'Si la máquina avanza hacia ti y te aprieta contra algo, al tocar el botón con el cuerpo invierte la marcha y te libera.'),
+  Q('transp','¿Qué hace la seta roja de emergencia?',
+    ['Corta la corriente y para la máquina','Enciende las luces','Hace ir más rápido'],
+    'Es el botón rojo grande. Antes de empezar, mira dónde está.'),
+  Q('transp','En llano, ¿cómo se lleva normalmente el transpalé con carga?',
+    ['Tirando de él y mirando hacia donde vas','Empujándolo con la carga delante','Subido encima de la carga'],
+    'Tirando ves el camino y la máquina no te empuja. Solo cambia al bajar una pendiente.'),
+  Q('transp','Bajas una pendiente con el transpalé cargado. ¿Dónde va la carga?',
+    ['Delante, más abajo que tú','Detrás de ti, por encima','Da igual'],
+    'Si la carga quedara por encima de ti, cuesta abajo te podría arrollar.'),
+  Q('transp','¿Qué protección es imprescindible con el transpalé?',
+    ['Calzado de seguridad','Casco de moto','Guantes de cocina'],
+    'Los pies son lo que más se expone: las ruedas y las horquillas pasan muy cerca.'),
+  Q('transp','¿Qué pasa si sueltas el timón del transpalé eléctrico?',
+    ['La máquina frena','La máquina acelera','Las horquillas suben'],
+    'El timón funciona como un mando de seguridad: cuando queda vertical u horizontal, la máquina frena.'),
+  Q('transp','¿Cuánto levanta un transpalé?',
+    ['Unos centímetros, lo justo para mover el palé','Hasta lo alto de la estantería','Tres metros'],
+    'Solo despega el palé del suelo para moverlo. Para subirlo a una estantería se usa otra máquina.'),
+  Q('transp','¿Qué necesitas para poner en marcha un transpalé eléctrico?',
+    ['La llave o el código de arranque','Nada, se empuja y arranca','Un permiso del cliente'],
+    'La llave o el código impiden que lo use alguien sin formación ni autorización.'),
+
+  // ---- Recogepedidos
+  Q('recoge','¿Qué tiene de especial la recogepedidos?',
+    ['El operador sube con la carga en la plataforma','No tiene horquillas','Funciona con gasóleo'],
+    'Es la máquina para preparar pedidos en estanterías altas: el operador sube y coge las cajas a mano.'),
+  Q('recoge','¿Cuál es el riesgo más grave de la recogepedidos?',
+    ['Caerse desde la plataforma','Quemarse con el motor','El ruido'],
+    'Se trabaja en altura. Por eso se lleva arnés anclado y nunca se sale de la plataforma elevada.'),
+  Q('recoge','Con la plataforma arriba, ¿qué hace el operador?',
+    ['Lleva el arnés anclado y no sale de la plataforma','Pasa a la estantería si la caja está lejos','Se quita el arnés para moverse mejor'],
+    'Si la caja queda lejos, se baja, se recoloca la máquina y se vuelve a subir.'),
+  Q('recoge','¿Qué pasa si sueltas los mandos de la recogepedidos?',
+    ['La máquina se para','Sigue sola','Sube más rápido'],
+    'Son mandos de «hombre presente»: la máquina solo se mueve mientras los mantienes pulsados.'),
+  Q('recoge','¿Para qué se usa la recogepedidos?',
+    ['Para preparar pedidos en estanterías altas','Para cargar camiones en la calle','Para mover tierra'],
+    'Se coge la mercancía por unidades o cajas, directamente de los niveles altos, y se prepara el pedido sobre el palé.'),
+
+  // ---- Estabilidad
+  Q('estab','La carretilla contrapesada funciona como…',
+    ['Un balancín','Una bicicleta','Un ascensor'],
+    'A un lado está la carretilla con su contrapeso y al otro la carga. El punto de apoyo es el eje de las ruedas delanteras.', 'balancin'),
+  Q('estab','En el balancín de la carretilla, ¿dónde está el punto de apoyo?',
+    ['En el eje de las ruedas delanteras','En el asiento','En la punta de las horquillas'],
+    'Si la carga «pesa más» que la carretilla, esta se levanta por detrás y vuelca hacia delante sobre ese eje.', 'balancin'),
+  Q('estab','La placa dice «2.000 kg a 500 mm». ¿Qué quiere decir?',
+    ['Levanta 2.000 kg si el centro de la carga está a 500 mm del talón o menos','Levanta 2.000 kg a 500 mm de altura','Pesa 2.000 kg'],
+    'Son dos datos que van juntos: el peso y dónde está el centro de la carga. Si el centro queda más lejos, ya no puede con esos kilos.', 'placa'),
+  Q('estab','¿Qué es el talón de la horquilla?',
+    ['El codo donde la horquilla pasa de vertical a horizontal','La punta de la horquilla','Una rueda'],
+    'Es donde apoya la carga contra el respaldo. Desde ahí se mide la distancia al centro de la carga.', 'talon'),
+  Q('estab','Si la carga queda en la punta de las horquillas, la carretilla…',
+    ['Vuelca hacia delante con más facilidad','Es más estable','Va más rápido'],
+    'Cuanto más lejos está la carga del eje delantero, más fuerza hace para volcar la carretilla. Por eso la horquilla se mete a fondo.'),
+  Q('estab','La carga pesa más de lo que pone la placa. ¿Qué haces?',
+    ['Divido la carga o uso una carretilla más potente','Subo a un compañero detrás para compensar','Pruebo a ver si puede'],
+    'Añadir peso detrás está prohibido: la máquina no está hecha para eso. Y probar «a ver si puede» es como empiezan muchos vuelcos.'),
+  Q('estab','Cuanto más alto subes la carga, la carretilla es…',
+    ['Menos estable','Más estable','Igual de estable'],
+    'Con la carga arriba, un frenazo o un giro pequeño bastan para volcar. Por eso no se circula con la carga alta.'),
+  Q('estab','Si tomas una curva muy deprisa, la carretilla puede…',
+    ['Volcar de lado','Ir más recta','Frenar sola'],
+    'En la curva, la fuerza centrífuga empuja hacia fuera. Las curvas se toman despacio.'),
+  Q('estab','Si frenas de golpe con carga, ¿qué puede pasar?',
+    ['Que caiga la carga o vuelque hacia delante','Nada','Que se descargue la batería'],
+    'La carga sigue hacia delante por inercia. Se frena siempre poco a poco.'),
+  Q('estab','No sabes cuánto pesa la carga. ¿Qué haces?',
+    ['No la levanto hasta saberlo: pregunto o miro la etiqueta','La levanto un poco a ver qué pasa','La calculo a ojo'],
+    'Sin saber el peso no puedes saber si estás dentro de lo que marca la placa.'),
+  Q('estab','Mirando desde arriba, ¿en qué figura se apoya la carretilla contrapesada?',
+    ['En un triángulo','En un círculo','En una línea'],
+    'Las dos ruedas delanteras y el pivote del eje trasero forman un triángulo. Si el centro de gravedad sale de él, vuelca.', 'triangulo'),
+
+  // ---- Conducción y rampas
+  Q('cond','¿A qué altura llevas la carga cuando circulas?',
+    ['Baja, a unos 15 cm del suelo y el mástil inclinado hacia atrás','A la altura de los ojos','Arrastrando por el suelo'],
+    'Con la carga baja la carretilla es mucho más estable, y con el mástil atrás la carga se apoya en el respaldo.', 'quince'),
+  Q('cond','Y sin carga, ¿cómo llevas las horquillas?',
+    ['También a unos 15 cm del suelo','Lo más altas posible','Arrastrando'],
+    'Arrastrando se estropean el suelo y las horquillas. Altas pueden golpear a alguien en las piernas o la cabeza.'),
+  Q('cond','La carga es muy grande y no ves por delante. ¿Qué haces?',
+    ['Voy marcha atrás, mirando hacia donde voy','Subo la carga para ver por debajo','Sigo y toco la bocina'],
+    'Siempre se mira hacia donde vas. Subir la carga para ver aumenta el riesgo de vuelco.'),
+  Q('cond','¿Cómo subes una rampa con carga?',
+    ['Marcha adelante, con la carga mirando hacia arriba','Marcha atrás, con la carga mirando hacia abajo','En diagonal'],
+    'Regla de las rampas: con carga, la carga siempre mira hacia arriba de la rampa.', 'rampaSube'),
+  Q('cond','¿Cómo bajas una rampa con carga?',
+    ['Marcha atrás, con la carga mirando hacia arriba','Marcha adelante, con la carga mirando hacia abajo','En punto muerto'],
+    'Misma regla: la carga mira hacia arriba de la rampa. Por eso al bajar se va marcha atrás, despacio.', 'rampaBaja'),
+  Q('cond','Sin carga, en una rampa las horquillas miran…',
+    ['Hacia abajo','Hacia arriba','Hacia un lado'],
+    'Sin carga se hace al revés: el contrapeso queda del lado de arriba.', 'rampaVacio'),
+  Q('cond','¿Qué está prohibido en una rampa?',
+    ['Girar o cruzarla en diagonal','Subirla despacio','Tocar la bocina'],
+    'Si te pones de lado en la rampa, la carretilla vuelca con facilidad.'),
+  Q('cond','Como referencia, ¿a qué velocidad máxima se va dentro de la nave?',
+    ['10 km/h','40 km/h','60 km/h'],
+    'La referencia habitual es 10 km/h en interiores y 20 km/h en exteriores. Lo más importante: ir a una velocidad que te deje parar a tiempo.'),
+  Q('cond','¿Y en el patio exterior, con buena visibilidad?',
+    ['20 km/h','5 km/h','50 km/h'],
+    'Fuera la referencia es 20 km/h. Con carga, con suelo mojado o con gente cerca, más despacio.'),
+  Q('cond','¿Qué distancia dejas con la carretilla de delante?',
+    ['Al menos tres largos de carretilla','Medio metro','Ninguna'],
+    'Así tienes tiempo de frenar si la de delante para de golpe o se le cae la carga.'),
+  Q('cond','Llegas a una puerta de vaivén. ¿Qué haces?',
+    ['Paro, toco la bocina, miro por el cristal y empujo despacio','Acelero para que se abra','La empujo con las horquillas altas'],
+    'Al otro lado puede haber alguien que no te ve.'),
+  Q('cond','¿Cuándo tocas la bocina?',
+    ['En cruces, esquinas y puertas, sin abusar','Todo el rato','Nunca dentro del almacén'],
+    'Si la tocas sin parar, la gente deja de hacerle caso. Piensa siempre que el peatón no te ha visto.'),
+  Q('cond','Un compañero te pide subir en las horquillas para coger una caja. ¿Qué haces?',
+    ['Me niego: solo se suben personas con una cesta preparada para ello','Le subo despacio','Le subo encima de un palé'],
+    'Llevar o subir personas sin un equipo diseñado para ello está prohibido.'),
+  Q('cond','¿Cuándo se sube o se baja la carga?',
+    ['Solo con la carretilla parada','Mientras circulas, para ganar tiempo','En las curvas'],
+    'Altura y movimiento a la vez son la receta del vuelco.'),
+  Q('cond','¿Puedes sacar el brazo o el pie fuera de la carretilla mientras conduces?',
+    ['No, nada del cuerpo debe salir del contorno de la máquina','Sí, para apartar cosas','Sí, si vas despacio'],
+    'Un brazo o un pie fuera puede quedar atrapado contra una estantería o una columna.'),
+
+  // ---- Manipular cargas
+  Q('carga','¿Cómo metes las horquillas debajo de la carga?',
+    ['Hasta el fondo, hasta tocar el respaldo','Solo la punta','Hasta la mitad'],
+    'Con las horquillas a fondo la carga queda cerca del talón y la carretilla es más estable.'),
+  Q('carga','¿Cuánto deben medir las horquillas como mínimo?',
+    ['Dos tercios del largo de la carga','La mitad de la carga','Da igual'],
+    'Si son demasiado cortas, la carga queda en el aire y puede volcar hacia delante.'),
+  Q('carga','¿Puedes levantar una carga con un solo brazo de la horquilla?',
+    ['No, nunca','Sí, si pesa poco','Sí, si vas despacio'],
+    'La carga queda torcida y puede caer.'),
+  Q('carga','El palé tiene tablas rotas. ¿Qué haces?',
+    ['No lo cojo hasta cambiarlo o repararlo','Lo cojo con cuidado','Lo levanto más deprisa'],
+    'Un palé roto puede romperse arriba y soltar toda la carga.'),
+  Q('carga','¿Cómo debe ir la carga sobre el palé?',
+    ['Centrada, bien colocada y sujeta con film o fleje','Lo más alta posible','Suelta, para descargar rápido'],
+    'Así no se mueve en las frenadas ni en las curvas. Lo pesado, abajo.'),
+  Q('carga','Antes de entrar con la carretilla en un camión, compruebas que…',
+    ['Está frenado, con el motor parado y las ruedas calzadas','El conductor sigue con el motor encendido','Está limpio'],
+    'Si el camión se mueve, la carretilla puede caer por el borde del muelle.'),
+  Q('carga','Antes de dejar una carga en su sitio, ¿qué miras?',
+    ['Que no haya nadie en ese sitio','Que la carga esté mojada','Nada'],
+    'Al bajar la carga sobre alguien agachado, le puedes atrapar.'),
+  Q('carga','Para mover una carga muy grande con dos carretillas a la vez…',
+    ['Una persona responsable dirige la maniobra','Cada conductor va a su ritmo','No hace falta nada'],
+    'Las dos máquinas tienen que moverse como si fueran una.'),
+
+  // ---- Identificar máquinas (dibujos)
+  Q('contra','¿Qué máquina es?',
+    ['Carretilla contrapesada','Transpalé eléctrico','Recogepedidos'],
+    'Conductor sentado, techo de protección, mástil y carga delante, con el contrapeso detrás.', 'contra'),
+  Q('transp','¿Qué máquina es?',
+    ['Transpalé eléctrico','Carretilla contrapesada','Recogepedidos'],
+    'Se lleva con un timón, el operador va a pie y solo levanta el palé unos centímetros.', 'transp'),
+  Q('recoge','¿Qué máquina es?',
+    ['Recogepedidos','Transpalé eléctrico','Carretilla contrapesada'],
+    'El operador va en una plataforma que sube, con barandilla y arnés, para coger cajas de la estantería.', 'recoge'),
+
+];
+
+// Las imágenes que explicaban la respuesta pasan a la explicación (se ven después de votar)
+const AFTER = new Set(['balancin','placa','talon','triangulo','quince','rampaSube','rampaBaja','rampaVacio']);
+BANK.forEach(q=>{ if(q.img && AFTER.has(q.img)){ q.after = q.img; delete q.img; } });
+
+// ---- Preguntas de "¿está bien hecho?" con dibujo
+const OKQ = (t,img,ok,e)=>({type:'mc', t, img, q:'¿Está bien hecho lo que muestra el dibujo?',
+  o: ok ? ['Sí, está bien hecho','No, está mal hecho','Solo si la carga pesa poco'] : ['No, está mal hecho','Sí, está bien hecho','Sí, si va despacio'], e});
+BANK.push(
+  OKQ('cond','rampaSube',true,'Con carga, la carga tiene que mirar hacia arriba de la rampa. Para subir, eso es ir marcha adelante.'),
+  OKQ('cond','rampaSubeMal',false,'Sube marcha atrás con la carga mirando hacia abajo. Con carga, la carga siempre mira hacia arriba de la rampa: para subir se va marcha adelante.'),
+  OKQ('cond','rampaBaja',true,'Baja marcha atrás y la carga sigue mirando hacia arriba de la rampa. Es la forma correcta.'),
+  OKQ('cond','rampaMal',false,'Baja hacia delante con la carga mirando hacia abajo. La carretilla puede volcar hacia delante o soltar la carga. Con carga se baja marcha atrás.'),
+  OKQ('cond','rampaVacio',true,'Sin carga se hace al revés que con carga: las horquillas miran hacia abajo de la rampa y el contrapeso queda arriba.'),
+  OKQ('cond','rampaVacioMal',false,'Sin carga, las horquillas deben mirar hacia abajo de la rampa. Aquí miran hacia arriba y el contrapeso queda del lado de la bajada.'),
+  OKQ('cond','circulaBaja',true,'Circula con la carga baja, a unos 15 cm del suelo. Así la carretilla es estable y la carga no tapa tanto.'),
+  OKQ('cond','circulaAlta',false,'Circula con la carga en alto. Con un frenazo o una curva la carretilla puede volcar. La carga se lleva baja y solo se sube con la carretilla parada.'),
+  OKQ('cond','circulaPersona',false,'Lleva a una persona subida en las horquillas. Está prohibido: nadie viaja en las horquillas, en la carga ni en el contrapeso.'),
+);
+
+// ---- Palancas y mandos
+BANK.push(
+  Q('mandos','Mira el panel de palancas. ¿Cuál sube y baja las horquillas?',
+    ['La palanca 1','La palanca 2','La palanca 3'],
+    'El pictograma de la palanca 1 muestra la horquilla con una flecha hacia arriba y hacia abajo: es la de elevación. La 2 lleva el mástil con una flecha curva (inclinación) y la 3 una flecha a los lados (desplazador lateral).', 'panel'),
+  Q('mandos','Mira el panel de palancas. ¿Cuál inclina el mástil hacia delante o hacia atrás?',
+    ['La palanca 2','La palanca 1','La palanca 3'],
+    'La palanca 2 tiene el mástil dibujado con una flecha curva: sirve para inclinarlo. La 1 sube y baja, y la 3 mueve las horquillas a los lados.', 'panel'),
+  Q('mandos','Mira el panel de palancas. ¿Cuál mueve las horquillas hacia los lados?',
+    ['La palanca 3','La palanca 1','La palanca 2'],
+    'La palanca 3 lleva una flecha a izquierda y derecha: es el desplazador lateral. Mueve las horquillas sin mover la carretilla.', 'panel'),
+  Q('mandos','Tiras de la palanca de elevación hacia ti. ¿Qué hacen las horquillas?',
+    ['Suben','Bajan','Se inclinan hacia delante'],
+    'Hacia ti, las horquillas suben; hacia delante, bajan. Aun así, mira siempre el pictograma de la palanca antes de usarla.'),
+  Q('mandos','Empujas la palanca de elevación hacia delante. ¿Qué pasa?',
+    ['Las horquillas bajan','Las horquillas suben','La carretilla avanza'],
+    'Empujando hacia delante, la carga baja. Hazlo con suavidad para que la carga se asiente sin golpes.'),
+  Q('mandos','Tiras de la palanca de inclinación hacia ti. ¿Qué hace el mástil?',
+    ['Se inclina hacia atrás, hacia el conductor','Se inclina hacia delante','Sube'],
+    'La palanca de inclinación se mueve en el mismo sentido que el mástil: hacia ti, el mástil se va hacia atrás y la carga se apoya en el respaldo.'),
+  Q('mandos','Antes de circular, ¿qué palanca usas para que la carga se apoye en el respaldo?',
+    ['La de inclinación, hacia atrás','La de elevación, hasta arriba del todo','El desplazador lateral'],
+    'Se circula con la carga baja y el mástil inclinado hacia atrás. Así la carga no se cae en una frenada.'),
+  Q('mandos','¿Para qué sirve el desplazador lateral?',
+    ['Para mover las horquillas a izquierda o derecha sin mover la carretilla','Para girar la carretilla','Para subir la carga'],
+    'Ayuda a centrar la carga en el hueco de la estantería sin tener que maniobrar con toda la máquina.'),
+  Q('mandos','¿Cómo sabes para qué sirve cada palanca?',
+    ['Por el dibujo (pictograma) que lleva cada una','Probándolas con la carga puesta','Preguntando cada vez a un compañero'],
+    'Cada palanca debe llevar un pictograma claro de su función: elevar, inclinar o desplazar.'),
+  Q('mandos','El dibujo de una palanca está borrado. ¿Qué se hace?',
+    ['Avisar para que pongan un adhesivo nuevo','Nada, ya te lo sabes','Arrancar la palanca'],
+    'Si los pictogramas están borrados se repone el adhesivo. Otra persona que use la carretilla podría equivocarse.'),
+  Q('mandos','¿Desde dónde tienes que poder usar todas las palancas y mandos?',
+    ['Desde el asiento, sin levantarte ni estirarte','De pie, junto a la carretilla','Desde fuera de la cabina'],
+    'Desde el asiento se debe llegar a todo. Nada de levantarse para alcanzar una palanca ni de soltar el volante en una maniobra delicada.'),
+  Q('mandos','¿Cuándo usas la palanca de elevación para subir la carga a la estantería?',
+    ['Con la carretilla parada y frenada','Mientras avanzas','En plena curva'],
+    'Subir la carga mientras te mueves junta altura y movimiento, y eso provoca vuelcos.'),
+  Q('mandos','Al dejar la carretilla, ¿cómo dejas las palancas?',
+    ['En punto muerto','Con la de elevación tirada hacia ti','Da igual'],
+    'Mandos en punto muerto, horquillas en el suelo, freno echado y sin llave.'),
+  Q('mandos','¿Qué mando eliges para ir hacia delante o hacia atrás?',
+    ['El inversor de marcha','La palanca de inclinación','El desplazador lateral'],
+    'El inversor selecciona el sentido de la marcha. Las palancas hidráulicas solo mueven las horquillas y el mástil.'),
+  Q('mandos','¿Por qué los pedales tienen que ser difíciles de confundir?',
+    ['Porque confundir acelerador y freno puede ser fatal','Para que queden más bonitos','Para que duren más'],
+    'Por eso van colocados de forma que no se confundan y con superficie antideslizante.'),
+  Q('mandos','¿Cómo tiene que ser la superficie de los pedales?',
+    ['Antideslizante y fácil de limpiar','Lisa y brillante','Da igual'],
+    'Un pie que resbala en el freno es un accidente. Tampoco se conduce con el calzado mojado o con grasa.'),
+  // ---- Señales: forma y color
+  Q('senales','Una señal redonda azul con un dibujo blanco quiere decir…',
+    ['Obligación: tienes que hacer o llevar algo','Peligro','Prohibición'],
+    'Las señales de obligación son redondas y azules: calzado de seguridad, chaleco, gafas, protección auditiva…'),
+  Q('senales','Una señal en triángulo amarillo con borde negro quiere decir…',
+    ['Peligro: aviso de un riesgo','Obligación','Salida de emergencia'],
+    'Las señales de advertencia avisan de un peligro: carretillas en circulación, riesgo eléctrico, cargas suspendidas…'),
+  Q('senales','Una señal redonda con borde rojo y una barra cruzada quiere decir…',
+    ['Prohibición: no puedes hacer algo','Obligación','Equipo contra incendios'],
+    'Las de prohibición son redondas, con borde y barra rojos: prohibido fumar, prohibido el paso a peatones…'),
+  Q('senales','Una señal cuadrada roja con un dibujo blanco indica…',
+    ['Dónde hay un equipo contra incendios','Un peligro','Una obligación'],
+    'Las señales de lucha contra incendios son rojas y cuadradas o rectangulares: extintor, manguera, pulsador de alarma.'),
+);
+
+// Señales de PRL dibujadas
+const SIGNS = [
+  {kind:'adv', p:'carretilla', n:'Peligro: carretillas en circulación', e:'Triángulo amarillo: avisa de un peligro. Se pone donde circulan carretillas para que los peatones estén atentos.'},
+  {kind:'adv', p:'rayo', n:'Peligro: riesgo eléctrico', e:'Triángulo amarillo con un rayo: riesgo eléctrico. Lo verás en cuadros eléctricos y en la zona de carga de baterías.'},
+  {kind:'adv', p:'llama', n:'Peligro: materias inflamables', e:'Triángulo amarillo con una llama: hay materias que arden con facilidad, como el combustible o el hidrógeno de las baterías.'},
+  {kind:'adv', p:'colgada', n:'Peligro: cargas suspendidas', e:'Triángulo amarillo con una carga colgando: hay grúas trabajando. Nadie se queda debajo de una carga izada.'},
+  {kind:'proh', p:'persona', n:'Prohibido el paso a peatones', e:'Redonda con borde y barra rojos: prohibición. Zona reservada a las carretillas, los peatones no pueden pasar.'},
+  {kind:'proh', p:'carretilla', n:'Prohibido el paso a carretillas', e:'Redonda con borde y barra rojos: prohibición. Zona solo para personas a pie, las carretillas no entran.'},
+  {kind:'proh', p:'cigarro', n:'Prohibido fumar', e:'Redonda con borde y barra rojos: prohibición. Obligatoria en la zona de carga de baterías y de repostaje.'},
+  {kind:'obl', p:'bota', n:'Obligatorio calzado de seguridad', e:'Redonda azul: obligación. Con carretillas y transpalés los pies son lo más expuesto.'},
+  {kind:'obl', p:'chaleco', n:'Obligatorio chaleco reflectante', e:'Redonda azul: obligación. El chaleco hace que el conductor de la carretilla te vea.'},
+  {kind:'obl', p:'gafas', n:'Obligatorio protección de los ojos', e:'Redonda azul: obligación. Por ejemplo al manipular baterías, porque el ácido quema.'},
+  {kind:'obl', p:'oidos', n:'Obligatorio protección auditiva', e:'Redonda azul: obligación. Se pone donde el ruido es alto.'},
+  {kind:'fuego', p:'extintor', n:'Extintor', e:'Cuadrada roja: equipo contra incendios. Delante de un extintor nunca se aparca la carretilla.'},
+];
+function signQuestion(sg){
+  const twin = SIGNS.find(x=>x!==sg && x.p===sg.p);
+  let wrong = shuffle(SIGNS.filter(x=>x!==sg && x!==twin)).slice(0, twin?1:2).map(x=>x.n);
+  if(twin) wrong.unshift(twin.n);
+  return {type:'mc', t:'senales', q:'¿Qué significa esta señal?', o:[sg.n, ...wrong], e:sg.e, sign:sg};
+}
+
+const ORDERS = [
+  {q:'Apilar una carga en la estantería', steps:[
+    'Coger la carga y subirla unos 15 cm',
+    'Inclinar el mástil hacia atrás',
+    'Ir hasta la estantería',
+    'Parar y subir la carga a su altura',
+    'Avanzar despacio hasta encima del hueco',
+    'Poner las horquillas rectas y bajar la carga'],
+    e:'La carga solo se sube con la carretilla parada. Nunca se juntan altura y movimiento.'},
+  {q:'Desapilar una carga de la estantería', steps:[
+    'Meter las horquillas con el mástil recto',
+    'Subir un poco la carga y salir marcha atrás despacio',
+    'Inclinar el mástil hacia atrás',
+    'Bajar la carga a unos 15 cm del suelo',
+    'Circular hasta el destino'],
+    e:'Solo se empieza a circular cuando la carga ya está abajo.'},
+  {q:'Coger una carga del suelo', steps:[
+    'Mirar que el palé está bien',
+    'Meter las horquillas hasta el fondo',
+    'Subir un poco la carga',
+    'Inclinar el mástil hacia atrás',
+    'Circular con la carga baja'],
+    e:'Primero se revisa lo que se va a coger. Luego horquillas a fondo, se despega, se inclina atrás y se circula bajo.'},
+  {q:'Pasar una puerta de vaivén', steps:[
+    'Parar delante de la puerta',
+    'Tocar la bocina',
+    'Mirar por el cristal',
+    'Empujar despacio y pasar'],
+    e:'Al otro lado puede haber alguien. Primero se para, se avisa y se mira.'},
+  {q:'Dejar la carretilla al acabar', steps:[
+    'Llevarla a su sitio, en llano',
+    'Bajar las horquillas al suelo',
+    'Poner los mandos en punto muerto',
+    'Echar el freno de mano',
+    'Parar el motor y quitar la llave'],
+    e:'Las horquillas se bajan con la máquina todavía encendida. Lo último es quitar la llave.'},
+];
+
+const RULES = [
+  'Solo conduce quien está formado y autorizado.',
+  'Revisa la carretilla antes de empezar.',
+  'Cinturón siempre. Si vuelca, no saltes.',
+  'Respeta la placa: peso, centro y altura.',
+  'Circula con la carga baja e inclinada hacia atrás.',
+  'Mira hacia donde vas. Si no ves, marcha atrás.',
+  'En rampa, la carga mira hacia arriba.',
+  'Al terminar: horquillas al suelo, freno y sin llave.',
+];
+
+/* ================= UTILIDADES ================= */
+const $ = s=>document.querySelector(s);
+const rnd = n=>Math.floor(Math.random()*n);
+const pick = a=>a[rnd(a.length)];
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=rnd(i+1);[a[i],a[j]]=[a[j],a[i]]}return a}
+const esc = s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ================= ESTADO ================= */
+const S = { timed:false, count:15, topic:'all', mode:null, items:[], idx:0, results:[], answered:false, timerId:null, timeLeft:0, timeMax:0, orderPick:[], votes:[], voteLog:[], last:null };
+const MODE_TITLE = {test:'Test de examen', order:'Ordena la maniobra', look:'Mira y responde', retry:'Repaso de fallos'};
+
+function setSeg(id, key, cast=Number, after){
+  const el = document.getElementById(id);
+  el.addEventListener('click', ev=>{
+    const b = ev.target.closest('button'); if(!b) return;
+    el.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed', x===b?'true':'false'));
+    S[key] = cast(b.dataset.v);
+    if(after) after();
+  });
+}
+function setSound(on){
+  Snd.on = on;
+  $('#soundBtn').setAttribute('aria-pressed', on?'true':'false');
+  $('#soundBtn').textContent = on ? 'Sonido' : 'Sin sonido';
+  document.querySelectorAll('#segSound button').forEach(b=>b.setAttribute('aria-pressed', (b.dataset.v==='1')===on ? 'true':'false'));
+  try{ localStorage.setItem('carnet-sound', on?'1':'0'); }catch(e){}
+}
+
+/* ================= PARTIDAS ================= */
+function buildItems(mode){
+  if(mode==='test'){
+    const pool = shuffle(BANK.filter(q=>!q.img && (S.topic==='all' || q.t===S.topic)));
+    const signQs = (S.topic==='all' || S.topic==='senales') ? shuffle(SIGNS).slice(0,4).map(signQuestion) : [];
+    const withImg = shuffle([...BANK.filter(q=>q.img && (S.topic==='all' || q.t===S.topic)), ...signQs]).slice(0, S.topic==='all' ? 4 : 6);
+    return shuffle([...pool.slice(0, Math.max(0, S.count - withImg.length)), ...withImg]).slice(0, S.count);
+  }
+  if(mode==='order') return shuffle(ORDERS).map(o=>({type:'order', t:'carga', q:o.q, steps:o.steps, e:o.e}));
+  if(mode==='look'){
+    const imgs = BANK.filter(q=>q.img);
+    return shuffle([...shuffle(imgs).slice(0,10), ...shuffle(SIGNS).slice(0,5).map(signQuestion)]);
+  }
+  return [];
+}
+function startMode(mode, items){
+  S.mode = mode;
+  S.items = items || buildItems(mode);
+  if(!S.items.length) return;
+  S.last = {mode, items:S.items};
+  S.idx = 0; S.results = [];
+  $('#modeTitle').textContent = MODE_TITLE[mode] + (mode==='test' && S.topic!=='all' ? ' · ' + TOPIC_NAME[S.topic] : '');
+  show('play');
+  Snd.page();
+  renderItem();
+}
+function show(id){
+  ['home','play','end'].forEach(s=>document.getElementById(s).hidden = (s!==id));
+  window.scrollTo(0,0);
+}
+
+/* ================= PANTALLA ================= */
+function renderRack(el, current){
+  el.innerHTML = S.items.map((_,i)=>{
+    const r = S.results[i];
+    const cls = r ? (r.ok===null?'neutral':r.ok?'ok':'bad') : (i===current?'now':'');
+    return `<span class="slot ${cls}" title="Pregunta ${i+1}"></span>`;
+  }).join('');
+}
+function figFor(it){
+  if(it.sign) return `<div class="fig small" style="max-width:240px">${drawSign(it.sign.kind, it.sign.p)}</div>`;
+  if(it.img && IMG[it.img]) return `<div class="fig">${IMG[it.img]()}</div>`;
+  return '';
+}
+function renderItem(){
+  const it = S.items[S.idx];
+  S.answered = false;
+  $('#counter').textContent = `${S.idx+1} de ${S.items.length}`;
+  renderRack($('#rack'), S.idx);
+  const card = $('#card');
+  const tag = it.type==='order' ? 'Maniobra' : TOPIC_NAME[it.t];
+  if(it.type==='mc'){
+    it._opts = shuffle(it.o.map((text,i)=>({text, ok:i===0})));
+    S.votes = it._opts.map(()=>0); S.voteLog = [];
+    card.innerHTML = `
+      <div class="qmeta"><span class="tag"><i></i>${tag}</span></div>
+      <p class="qtext">${it.q}</p>
+      ${figFor(it)}
+      <div class="opts" role="group" aria-label="Respuestas y votos">
+        ${it._opts.map((o,i)=>`
+          <div class="optrow" data-i="${i}">
+            <span class="vbar"></span>
+            <button type="button" class="opt" data-i="${i}" aria-label="Sumar un voto a la respuesta ${'ABCD'[i]}"><span class="l">${'ABCD'[i]}</span><span>${o.text}</span></button>
+            <div class="vc"><button type="button" class="minus" data-i="${i}" aria-label="Quitar un voto">−</button><output id="v${i}">0</output><button type="button" class="plus" data-i="${i}" aria-label="Sumar un voto">+</button><span class="pc" id="pc${i}"></span></div>
+          </div>`).join('')}
+      </div>
+      <div class="votebar"><span class="total" id="vtotal">0 votos</span><button type="button" class="btn primary" id="reveal">Ver respuesta</button><span class="kbd">Teclas 1–${it._opts.length} suman un voto · Retroceso deshace · Intro destapa</span></div>
+      <div id="fbSlot"></div>`;
+    card.querySelectorAll('.opt,.plus').forEach(b=>b.addEventListener('click',()=>vote(+b.dataset.i, 1)));
+    card.querySelectorAll('.minus').forEach(b=>b.addEventListener('click',()=>vote(+b.dataset.i, -1)));
+    $('#reveal').addEventListener('click',()=>reveal());
+  } else {
+    S.orderPick = [];
+    it._pool = shuffle(it.steps.map((s,i)=>({s,i})));
+    card.innerHTML = `
+      <div class="qmeta"><span class="tag"><i></i>${tag}</span></div>
+      <p class="qtext">${esc(it.q)}. Entre todos, decidid el orden y pulsad los pasos uno a uno.</p>
+      <div class="order">
+        <div><h4>Pasos desordenados</h4><div class="pool" id="pool"></div></div>
+        <div><h4>Orden de la clase</h4><div class="seq" id="seq"></div></div>
+      </div>
+      <div class="votebar"><button type="button" class="btn primary" id="checkOrder" disabled>Comprobar</button><button type="button" class="btn" id="resetOrder">Empezar de nuevo</button></div>
+      <div id="fbSlot"></div>`;
+    drawOrder();
+    $('#checkOrder').addEventListener('click', ()=>answerOrder());
+    $('#resetOrder').addEventListener('click', ()=>{ if(S.answered) return; S.orderPick=[]; drawOrder(); });
+  }
+  startTimer(it.type==='order'?60:30);
+}
+function vote(i, d){
+  if(S.answered) return;
+  if(d<0 && S.votes[i]===0) return;
+  S.votes[i] += d;
+  if(d>0) S.voteLog.push(i); else { const p = S.voteLog.lastIndexOf(i); if(p>=0) S.voteLog.splice(p,1); }
+  updateVotes(false);
+}
+function undoVote(){
+  if(S.answered || !S.voteLog.length) return;
+  const i = S.voteLog.pop(); S.votes[i]--; updateVotes(false);
+}
+function updateVotes(showPct){
+  const total = S.votes.reduce((a,b)=>a+b,0);
+  S.votes.forEach((v,i)=>{
+    $('#v'+i).textContent = v;
+    const row = document.querySelector(`.optrow[data-i="${i}"]`);
+    row.querySelector('.vbar').style.width = (showPct && total ? v/total*100 : 0) + '%';
+    $('#pc'+i).textContent = showPct && total ? Math.round(v/total*100)+' %' : '';
+  });
+  $('#vtotal').textContent = total===1 ? '1 voto' : `${total} votos`;
+}
+function drawOrder(){
+  const it = S.items[S.idx];
+  const pool = $('#pool'), seq = $('#seq');
+  const remaining = it._pool.filter(p=>!S.orderPick.includes(p.i));
+  pool.innerHTML = remaining.length ? remaining.map(p=>`<button type="button" class="chip" data-i="${p.i}"><span>${esc(p.s)}</span></button>`).join('') : '<div class="empty">Ya están todos. Pulsad «Comprobar».</div>';
+  seq.innerHTML = S.orderPick.length ? S.orderPick.map((i,n)=>`<button type="button" class="chip" data-i="${i}" title="Quitar"><span class="n">${n+1}</span><span>${esc(it.steps[i])}</span></button>`).join('') : '<div class="empty">Aquí van los pasos que elijáis…</div>';
+  pool.querySelectorAll('.chip').forEach(b=>b.addEventListener('click',()=>{ if(S.answered) return; S.orderPick.push(+b.dataset.i); drawOrder(); }));
+  seq.querySelectorAll('.chip').forEach(b=>b.addEventListener('click',()=>{ if(S.answered) return; S.orderPick = S.orderPick.filter(x=>x!==+b.dataset.i); drawOrder(); }));
+  const chk = $('#checkOrder'); if(chk) chk.disabled = S.orderPick.length !== it.steps.length;
+}
+
+/* ================= RESPUESTAS ================= */
+function record(ok, extra={}){
+  S.answered = true;
+  stopTimer();
+  S.results[S.idx] = {ok, ...extra};
+  renderRack($('#rack'), -1);
+  if(ok===true) Snd.engine(); else if(ok===false) Snd.crash();
+}
+function reveal(timeout=false){
+  if(S.answered) return;
+  const it = S.items[S.idx];
+  const ci = it._opts.findIndex(o=>o.ok);
+  const total = S.votes.reduce((a,b)=>a+b,0);
+  const good = S.votes[ci];
+  const maxOther = Math.max(0, ...S.votes.filter((_,i)=>i!==ci));
+  const ok = total ? good > maxOther : null;
+  const pct = total ? Math.round(good/total*100) : null;
+  record(ok, {pct, total});
+  document.querySelectorAll('#card .optrow').forEach((row,j)=>{
+    row.querySelectorAll('button').forEach(b=>b.disabled=true);
+    if(j===ci) row.classList.add('right');
+    else if(S.votes[j]>0) row.classList.add('wrong');
+    else row.classList.add('dim');
+  });
+  $('#reveal').disabled = true;
+  updateVotes(true);
+  let head, cls;
+  if(ok===null){ head = timeout ? 'Tiempo · respuesta correcta' : 'Respuesta correcta'; cls='good'; }
+  else if(ok){ head = `¡La mayoría acierta! ${pct} % de la clase`; cls='good'; }
+  else { head = `¡Choque! Solo ha acertado el ${pct} %`; cls='badf'; }
+  const body = `<p><b>Respuesta correcta:</b> ${it._opts[ci].text}</p><p>${it.e||''}</p>${it.after && IMG[it.after] ? `<div class="fig" style="margin-top:4px">${IMG[it.after]()}</div>` : ''}`;
+  showFeedback(cls, head, body);
+}
+function answerOrder(timeout=false){
+  if(S.answered) return;
+  const it = S.items[S.idx];
+  const ok = !timeout && S.orderPick.length===it.steps.length && S.orderPick.every((v,i)=>v===i);
+  record(ok, {pct: ok?100:0});
+  document.querySelectorAll('#seq .chip').forEach((b,n)=>{ b.disabled = true; b.classList.add(S.orderPick[n]===n?'right':'wrong'); });
+  document.querySelectorAll('#pool .chip').forEach(b=>b.disabled=true);
+  $('#checkOrder').disabled = true; $('#resetOrder').disabled = true;
+  let body = '';
+  if(!ok) body += `<p><b>El orden correcto es:</b></p><ol class="correct-order">${it.steps.map(s=>`<li>${esc(s)}</li>`).join('')}</ol>`;
+  body += `<p style="margin-top:10px">${it.e}</p>`;
+  showFeedback(ok?'good':'badf', timeout ? '¡Choque! Se acabó el tiempo' : ok ? '¡Correcto! Motor en marcha' : '¡Choque! El orden no es ese', body);
+}
+function showFeedback(cls, head, body){
+  const last = S.idx === S.items.length-1;
+  $('#fbSlot').innerHTML = `<div class="fb ${cls}" role="status"><div class="head">${head}</div><div class="body">${body}
+    <div class="next"><button type="button" class="btn primary" id="nextBtn">${last?'Ver resultado':'Siguiente pregunta'}</button><span class="kbd">o pulsa Intro</span></div></div></div>`;
+  $('#nextBtn').addEventListener('click', next);
+  $('#nextBtn').focus({preventScroll:true});
+  $('#fbSlot').scrollIntoView({block:'nearest', behavior:'smooth'});
+}
+function next(){
+  if(S.idx < S.items.length-1){ S.idx++; Snd.page(); renderItem(); window.scrollTo(0,0); }
+  else { Snd.page(); finish(); }
+}
+
+/* ================= RELOJ ================= */
+function startTimer(sec){
+  stopTimer();
+  const bar = $('#timer');
+  if(!S.timed){ bar.hidden = true; return; }
+  bar.hidden = false; bar.classList.remove('low');
+  S.timeMax = sec; S.timeLeft = sec;
+  const fill = bar.firstElementChild; fill.style.width='100%';
+  S.timerId = setInterval(()=>{
+    S.timeLeft -= .25;
+    fill.style.width = Math.max(0, S.timeLeft/S.timeMax*100)+'%';
+    if(S.timeLeft <= S.timeMax*0.25) bar.classList.add('low');
+    if(S.timeLeft <= 0){
+      stopTimer();
+      if(S.items[S.idx].type==='order') answerOrder(true); else reveal(true);
+    }
+  }, 250);
+}
+function stopTimer(){ if(S.timerId){ clearInterval(S.timerId); S.timerId=null; } }
+
+/* ================= FINAL ================= */
+function finish(){
+  stopTimer();
+  const scored = S.results.filter(r=>r && r.ok!==null);
+  const total = S.items.length;
+  const wins = S.results.filter(r=>r && r.ok===true).length;
+  const pcts = S.results.filter(r=>r && r.pct!=null).map(r=>r.pct);
+  const avg = pcts.length ? Math.round(pcts.reduce((a,b)=>a+b,0)/pcts.length) : null;
+  const pass = scored.length ? wins/scored.length >= 0.7 : true;
+  show('end');
+  $('#endTitle').textContent = 'Resultado de la clase · ' + MODE_TITLE[S.mode];
+  renderRack($('#endRack'), -1);
+  $('#scorebox').innerHTML = `
+    <div class="eyebrow">Preguntas que la mayoría acertó</div>
+    <div class="big">${wins}<span style="font-size:.45em;color:var(--ink-2)"> / ${scored.length || total}</span></div>
+    ${scored.length ? `<div class="stamp ${pass?'pass':'fail'}">${pass?'Clase apta':'Toca repasar'}</div>` : ''}
+    <p style="margin:14px 0 0;color:var(--ink-2)">${avg!=null ? `De media, el ${avg} % de los votos fue a la respuesta correcta. ` : ''}Marcamos el aprobado cuando la mayoría acierta 7 de cada 10 preguntas.</p>`;
+  $('#rule').textContent = 'Regla para llevarse a casa: ' + pick(RULES);
+  const fails = S.items.map((it,i)=>({it, r:S.results[i]})).filter(x=>!x.r || x.r.ok===false);
+  $('#retryFails').hidden = !fails.length;
+  $('#review').innerHTML = fails.length
+    ? `<h3>Las que fallamos (${fails.length})</h3>` + fails.map(({it,r})=>{
+        const right = it.type==='order' ? `<ol class="correct-order">${it.steps.map(s=>`<li>${esc(s)}</li>`).join('')}</ol>` : it.o[0];
+        const q = it.type==='order' ? esc(it.q) : it.q;
+        const p = r && r.pct!=null && it.type!=='order' ? ` <span style="color:var(--bad)">(${r.pct} % acertó)</span>` : '';
+        return `<details><summary>${q}${p}</summary><div class="ans">${right}</div><p class="why">${it.e||''}</p></details>`;
+      }).join('')
+    : `<h3>Ningún choque</h3><p>La mayoría acertó todas las preguntas. Probad otro modo o activad el reloj.</p>`;
+  if(scored.length) setTimeout(()=> pass ? Snd.engine() : Snd.crash(), 350);
+}
+
+/* ================= INICIO ================= */
+function toggleFS(){
+  const d=document, el=d.documentElement;
+  const isFS = d.fullscreenElement || d.webkitFullscreenElement;
+  try{
+    if(isFS){ (d.exitFullscreen||d.webkitExitFullscreen).call(d); }
+    else { const r=(el.requestFullscreen||el.webkitRequestFullscreen); if(r){ const pr=r.call(el); if(pr&&pr.catch) pr.catch(()=>fsFail()); } else fsFail(); }
+  }catch(e){ fsFail(); }
+}
+function fsFail(){ document.querySelectorAll('.fsbtn').forEach(b=>b.textContent='Pulsa F11'); }
+function fsLabel(){ const on = document.fullscreenElement || document.webkitFullscreenElement; document.querySelectorAll('.fsbtn').forEach(b=>b.textContent = on ? 'Salir de pantalla completa' : 'Pantalla completa'); }
+function init(){
+  document.querySelectorAll('.fsbtn').forEach(b=>b.addEventListener('click', toggleFS));
+  document.addEventListener('fullscreenchange', fsLabel); document.addEventListener('webkitfullscreenchange', fsLabel);
+  $('#heroArt').innerHTML = drawContra({load:true, lift:30});
+  $('#artTest').innerHTML = drawTransp();
+  $('#artLook').innerHTML = `<div style="display:flex;gap:10px;height:120px">${drawSign('adv','carretilla')}${drawSign('obl','bota')}${drawSign('proh','persona')}</div>`;
+  $('#artOrder').innerHTML = drawQuince();
+  $('#segTopic').innerHTML = TOPICS.map(t=>`<button type="button" data-v="${t.k}" aria-pressed="${t.k==='all'}">${t.n}</button>`).join('');
+  setSeg('segTimer','timed', v=>v==='1');
+  setSeg('segCount','count');
+  setSeg('segTopic','topic', String);
+  $('#segSound').addEventListener('click', ev=>{ const b=ev.target.closest('button'); if(!b) return; setSound(b.dataset.v==='1'); if(Snd.on) Snd.page(); });
+  $('#soundBtn').addEventListener('click', ()=>setSound(!Snd.on));
+  try{ if(localStorage.getItem('carnet-sound')==='0') setSound(false); }catch(e){}
+  document.querySelectorAll('.mode').forEach(b=>b.addEventListener('click',()=>startMode(b.dataset.mode)));
+  $('#quit').addEventListener('click',()=>{ stopTimer(); show('home'); });
+  $('#home2').addEventListener('click',()=>{ Snd.page(); show('home'); });
+  $('#again').addEventListener('click',()=>{ const m = S.last.mode; startMode(m, m==='retry' ? S.last.items : undefined); });
+  $('#retryFails').addEventListener('click',()=>{
+    const fails = S.items.filter((it,i)=>!S.results[i] || S.results[i].ok===false);
+    startMode('retry', shuffle(fails));
+  });
+  document.addEventListener('keydown', ev=>{
+    if($('#play').hidden) return;
+    const it = S.items[S.idx];
+    if(!S.answered && it.type==='mc'){
+      const i = '1234'.indexOf(ev.key) >= 0 && ev.key.length===1 ? '1234'.indexOf(ev.key) : -1;
+      if(i>=0 && i<it._opts.length){ ev.preventDefault(); vote(i,1); return; }
+      if(ev.key==='Backspace'){ ev.preventDefault(); undoVote(); return; }
+      if(ev.key==='Enter' && !(document.activeElement && document.activeElement.closest('#card button'))){ ev.preventDefault(); reveal(); }
+    } else if(S.answered && ev.key==='Enter'){
+      if(document.activeElement && document.activeElement.id==='nextBtn') return;
+      ev.preventDefault(); next();
+    }
+  });
+}
+init();
+</script>
+
+</body>
+</html>

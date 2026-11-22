@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>De dónde vienen los derechos laborales · Juego 1 · cc Oriol Pérez</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;700;800&family=Nunito+Sans:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root { --navy:#1F3A5F; --light:#F6F4EE; --paper:#FCFBF8; --acc:#E76F51; --ok:#1E6F66; --okbg:#E3F2EF; --bad:#B5472B; --badbg:#FBE3DC; --text:#33404F; }
+* { box-sizing:border-box; }
+html, body { margin:0; height:100%; }
+body { font-family:'Nunito Sans', Verdana, sans-serif; color:var(--text); background:var(--light); }
+.app { min-height:100%; display:flex; flex-direction:column; }
+header { display:flex; align-items:center; justify-content:space-between; gap:16px; padding:14px 22px; background:var(--navy); color:#F6F4EE; }
+header .t { font-family:'Rubik', Arial, sans-serif; font-weight:700; font-size:clamp(16px,2.2vw,22px); line-height:1.2; }
+header .t small { display:block; font-family:'Nunito Sans', sans-serif; font-weight:700; font-size:12px; letter-spacing:2px; text-transform:uppercase; color:#F4A261; }
+.btn-fs { border:2px solid #F6F4EE; background:transparent; color:#F6F4EE; font:700 15px 'Nunito Sans', sans-serif; padding:9px 14px; border-radius:10px; cursor:pointer; white-space:nowrap; }
+.btn-fs:hover, .btn-fs:focus-visible { background:#F6F4EE; color:var(--navy); outline:none; }
+main { flex:1; display:flex; justify-content:center; padding:22px; }
+.card { position:relative; width:100%; max-width:980px; background:var(--paper); border-radius:22px; padding:clamp(20px,3.5vw,40px); box-shadow:0 10px 30px rgba(31,58,95,.10); overflow:hidden; }
+.card::before { content:""; position:absolute; inset:0; background-image:var(--wmtile); background-size:300px 170px; opacity:.55; pointer-events:none; }
+.card > * { position:relative; }
+.hud { display:flex; flex-wrap:wrap; gap:10px 22px; align-items:center; justify-content:space-between; font-weight:700; font-size:15px; margin-bottom:14px; }
+.pill { background:#EEF2F6; border-radius:999px; padding:6px 14px; }
+.pill b { color:var(--navy); }
+.bar { height:10px; background:#E5E9EE; border-radius:99px; overflow:hidden; margin-bottom:8px; }
+.bar > i { display:block; height:100%; background:var(--acc); width:0; transition:width .3s; }
+.timer { height:6px; background:#E5E9EE; border-radius:99px; overflow:hidden; margin-bottom:22px; }
+.timer > i { display:block; height:100%; background:var(--navy); width:100%; }
+h1 { font-family:'Rubik', Arial, sans-serif; color:var(--navy); font-size:clamp(26px,4vw,44px); line-height:1.12; margin:0 0 14px; }
+h2.q { font-family:'Rubik', Arial, sans-serif; color:var(--navy); font-size:clamp(21px,2.8vw,32px); line-height:1.25; margin:0 0 22px; }
+p { font-size:clamp(16px,1.9vw,20px); line-height:1.5; margin:0 0 14px; }
+.opts { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+@media (max-width:700px){ .opts { grid-template-columns:1fr; } }
+.opt { display:flex; gap:14px; align-items:center; text-align:left; width:100%; border:3px solid #DDE3EA; background:#FFFFFF; border-radius:16px; padding:16px 18px; font:700 clamp(16px,1.9vw,20px)/1.35 'Nunito Sans', sans-serif; color:var(--text); cursor:pointer; transition:transform .12s, border-color .12s; }
+.opt:hover:not(:disabled), .opt:focus-visible { border-color:var(--acc); transform:translateY(-2px); outline:none; }
+.opt .k { flex:none; width:38px; height:38px; border-radius:50%; background:var(--acc); color:#FFFFFF; display:flex; align-items:center; justify-content:center; font-family:'Rubik', sans-serif; font-size:18px; }
+.opt.right { border-color:var(--ok); background:var(--okbg); }
+.opt.wrong { border-color:var(--bad); background:var(--badbg); }
+.opt:disabled { cursor:default; }
+.fb { margin-top:20px; border-radius:16px; padding:18px 22px; display:none; }
+.fb.show { display:block; animation:pop .25s ease-out; }
+.fb.ok { background:var(--okbg); color:#10302C; }
+.fb.ko { background:var(--badbg); color:#5A1E10; }
+.fb strong { font-family:'Rubik', sans-serif; font-size:clamp(18px,2.2vw,23px); display:block; margin-bottom:6px; }
+.row { display:flex; gap:12px; flex-wrap:wrap; margin-top:20px; }
+.go { border:0; background:var(--navy); color:#F6F4EE; font:700 clamp(16px,1.9vw,20px) 'Nunito Sans', sans-serif; padding:14px 26px; border-radius:14px; cursor:pointer; }
+.go.alt { background:var(--acc); color:#FFFFFF; }
+.go:focus-visible { outline:4px solid #F4A261; outline-offset:2px; }
+.big { font-family:'Rubik', sans-serif; font-weight:800; font-size:clamp(54px,9vw,96px); color:var(--acc); line-height:1; margin:6px 0 10px; }
+.review { margin-top:18px; border-top:2px solid #E5E9EE; padding-top:14px; }
+.review div { padding:10px 0; border-bottom:1px solid #EEF1F4; font-size:17px; line-height:1.45; }
+.streak { color:var(--bad); }
+footer { text-align:center; font-size:13px; color:#5B6675; padding:10px 16px 16px; }
+@keyframes pop { from { transform:scale(.97); opacity:.4; } to { transform:scale(1); opacity:1; } }
+@media (prefers-reduced-motion: reduce) { * { animation:none !important; transition:none !important; } }
+#wm { position:fixed; inset:0; width:100%; height:100%; pointer-events:none; z-index:2147483647; }
+</style>
+</head>
+<body>
+<div class="app" id="app">
+<header>
+  <div class="t"><small>Drets i deures laborals · Juego 1 de 6</small>De dónde vienen los derechos laborales</div>
+  <button class="btn-fs" id="fs" type="button" aria-pressed="false">⛶ Pantalla completa</button>
+</header>
+<main><div class="card" id="card" aria-live="polite"></div></main>
+<footer>cc Oriol Pérez · Licencia CC BY-SA 4.0 · Datos legales a noviembre de 2026</footer>
+</div>
+<canvas id="wm" aria-hidden="true"></canvas>
+<script>
+const QS = [{"q": "¿Qué problema explica que naciera el derecho del trabajo?", "o": ["La desigualdad entre quien trabaja y quien contrata", "La falta de fábricas en las ciudades", "El exceso de leyes en el siglo XIX", "La llegada de la electricidad"], "e": "Quien necesita el jornal no negocia de igual a igual. El derecho del trabajo existe para proteger a la parte más débil."}, {"q": "En el siglo XIX, ¿cómo se trataba el contrato entre quien trabajaba y quien pagaba?", "o": ["Como un contrato privado cualquiera", "Como un contrato especial protegido", "Como un convenio colectivo", "Como una relación de funcionariado"], "e": "Se suponía que las dos partes eran libres e iguales, como en una compraventa."}, {"q": "¿Qué limitó la Ley Benot de 1873?", "o": ["El trabajo de niños y niñas en fábricas", "Las horas extra de los adultos", "El salario mínimo", "Las vacaciones pagadas"], "e": "Fue la primera ley que prohibió trabajar en fábricas a menores de diez años."}, {"q": "¿De qué trata la Ley Dato de 1900?", "o": ["De los accidentes de trabajo", "Del derecho de huelga", "De la jornada de ocho horas", "De la libertad sindical"], "e": "Hizo responsable a la empresa de los accidentes que sufrían sus trabajadores."}, {"q": "¿Dónde fue la huelga de La Canadenca?", "o": ["En Barcelona", "En Madrid", "En Bilbao", "En Sevilla"], "e": "Fue en 1919, en la compañía eléctrica que daba luz a Barcelona."}, {"q": "¿Qué se consiguió tras la huelga de La Canadenca?", "o": ["La jornada máxima de ocho horas", "El salario mínimo interprofesional", "El Estatuto de los Trabajadores", "Las vacaciones de 30 días"], "e": "Un decreto de 1919 fijó la jornada máxima de ocho horas."}, {"q": "¿Cuánto duró aproximadamente la huelga de La Canadenca?", "o": ["44 días", "4 días", "Un año", "Una semana"], "e": "Duró unos 44 días y dejó la ciudad a oscuras."}, {"q": "¿Qué tipo de empresa era La Canadenca?", "o": ["Una compañía eléctrica", "Una fábrica textil", "Una mina de carbón", "Un banco"], "e": "Era la compañía Riegos y Fuerzas del Ebro, que suministraba electricidad."}, {"q": "¿En qué año se aprobó la Ley de Contrato de Trabajo?", "o": ["1931", "1873", "1978", "2015"], "e": "En 1931 se reguló por primera vez el contrato de trabajo como algo distinto de cualquier otro contrato."}, {"q": "¿En qué año se aprobó la Constitución Española?", "o": ["1978", "1931", "1980", "1995"], "e": "La Constitución de 1978 reconoce el trabajo, la libertad sindical y la huelga como derechos."}, {"q": "¿En qué año se aprobó el primer Estatuto de los Trabajadores?", "o": ["1980", "1978", "1995", "2021"], "e": "El primer Estatuto es de 1980; la versión vigente es un texto refundido de 2015."}, {"q": "¿Qué norma es la versión vigente del Estatuto de los Trabajadores?", "o": ["El Real Decreto Legislativo 2/2015", "La Ley de 1931", "La Constitución de 1978", "El Real Decreto-ley 9/2025"], "e": "Es un texto refundido de 2015 que reúne todas las reformas anteriores."}, {"q": "¿Qué ley de 1995 obliga a las empresas a proteger la salud de su plantilla?", "o": ["La Ley de Prevención de Riesgos Laborales", "La Ley Dato", "La Ley de Libertad Sindical", "La Ley Rider"], "e": "La Ley 31/1995 obliga a evaluar riesgos y a proteger la seguridad y la salud."}, {"q": "¿Cuál fue el gran cambio de la reforma laboral de 2021?", "o": ["El contrato indefinido pasa a ser la regla general", "Se elimina el salario mínimo", "Se suprimen los convenios", "Se reduce la jornada a 35 horas"], "e": "La reforma limitó los contratos temporales y convirtió el indefinido en la regla."}, {"q": "¿Cuántas semanas dura el permiso por nacimiento desde 2025?", "o": ["19 semanas por progenitor", "16 semanas por progenitor", "12 semanas en total", "8 semanas por progenitor"], "e": "El Real Decreto-ley 9/2025 lo amplió de 16 a 19 semanas para cada progenitor."}, {"q": "¿Qué derechos recoge el artículo 28 de la Constitución?", "o": ["La libertad sindical y la huelga", "Las vacaciones pagadas", "El salario mínimo", "La jornada de 40 horas"], "e": "El artículo 28 reconoce la libertad sindical y el derecho de huelga, ambos fundamentales."}, {"q": "¿Cuántas horas solían durar las jornadas en las fábricas del siglo XIX?", "o": ["Entre 12 y 14 horas", "Entre 6 y 7 horas", "Exactamente 8 horas", "Menos de 5 horas"], "e": "Eran jornadas larguísimas, seis o siete días a la semana."}, {"q": "¿Cómo llegaron los derechos laborales?", "o": ["Gracias a huelgas, movilizaciones y sindicatos", "Los regalaron las empresas", "Llegaron solos con la tecnología", "Los impuso la Unión Europea en el siglo XIX"], "e": "Cada derecho tiene detrás una historia de reivindicaciones."}, {"q": "¿Qué ley regula hoy de forma general la relación entre persona trabajadora y empresa?", "o": ["El Estatuto de los Trabajadores", "El Código Civil", "La Ley Benot", "El Código de Comercio"], "e": "El Estatuto de los Trabajadores es la ley básica del trabajo asalariado."}, {"q": "¿Qué orden cronológico es el correcto?", "o": ["Ley Benot, Ley Dato, La Canadenca, Constitución", "Constitución, Ley Benot, La Canadenca, Ley Dato", "La Canadenca, Ley Benot, Constitución, Ley Dato", "Ley Dato, Constitución, Ley Benot, La Canadenca"], "e": "1873, 1900, 1919 y 1978."}];
+const WM = "cc Oriol Pérez";
+const TIME = 30;
+const $ = s => document.querySelector(s);
+const card = $('#card');
+let order = [], i = 0, score = 0, hits = 0, streak = 0, best = 0, failed = [], tStart = 0, tId = null, locked = false;
+
+function shuffle(a){ a = a.slice(); for (let k = a.length - 1; k > 0; k--) { const j = Math.floor(Math.random() * (k + 1)); [a[k], a[j]] = [a[j], a[k]]; } return a; }
+function esc(s){ return s.replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+function start(){
+  order = shuffle(QS.map((q, n) => n)); i = 0; score = 0; hits = 0; streak = 0; best = 0; failed = [];
+  show();
+}
+function intro(){
+  card.innerHTML = `<h1>De dónde vienen los derechos laborales</h1>
+  <p>20 preguntas sobre este concepto. Tienes ${TIME} segundos para cada una. Cada acierto suma 100 puntos, más un extra por responder rápido y por encadenar aciertos seguidos.</p>
+  <p>Puedes contestar con el ratón o con las teclas 1, 2, 3 y 4. Después de cada respuesta verás por qué es la correcta.</p>
+  <div class="row"><button class="go alt" id="b0" type="button">Empezar</button></div>`;
+  $('#b0').onclick = start; $('#b0').focus();
+}
+function show(){
+  locked = false;
+  const q = QS[order[i]];
+  const opts = shuffle(q.o.map((t, n) => ({ t, ok: n === 0 })));
+  card.innerHTML = `<div class="hud">
+    <span class="pill">Pregunta <b>${i + 1}</b> de ${QS.length}</span>
+    <span class="pill">Puntos <b>${score}</b></span>
+    <span class="pill">Racha <b class="streak">${streak}</b></span></div>
+    <div class="bar"><i style="width:${(i / QS.length) * 100}%"></i></div>
+    <div class="timer"><i id="tm"></i></div>
+    <h2 class="q">${esc(q.q)}</h2>
+    <div class="opts">${opts.map((o, n) => `<button class="opt" type="button" data-ok="${o.ok}"><span class="k">${n + 1}</span><span>${esc(o.t)}</span></button>`).join('')}</div>
+    <div class="fb" id="fb" role="status"></div>`;
+  card.querySelectorAll('.opt').forEach(b => b.onclick = () => answer(b));
+  tStart = performance.now(); clearInterval(tId);
+  tId = setInterval(() => {
+    const left = Math.max(0, TIME - (performance.now() - tStart) / 1000);
+    const tm = $('#tm'); if (tm) tm.style.width = (left / TIME * 100) + '%';
+    if (left <= 0) answer(null);
+  }, 100);
+}
+function answer(btn){
+  if (locked) return; locked = true; clearInterval(tId);
+  const q = QS[order[i]];
+  const all = [...card.querySelectorAll('.opt')];
+  all.forEach(b => { b.disabled = true; if (b.dataset.ok === 'true') b.classList.add('right'); });
+  const ok = btn && btn.dataset.ok === 'true';
+  const fb = $('#fb');
+  if (ok) {
+    const secs = (performance.now() - tStart) / 1000;
+    streak++; best = Math.max(best, streak); hits++;
+    const pts = 100 + Math.round(Math.max(0, TIME - secs) * 2) + (streak > 1 ? (streak - 1) * 10 : 0);
+    score += pts;
+    fb.className = 'fb ok show';
+    fb.innerHTML = `<strong>¡Correcto! +${pts} puntos</strong>${esc(q.e)}`;
+  } else {
+    if (btn) btn.classList.add('wrong');
+    streak = 0; failed.push(q);
+    fb.className = 'fb ko show';
+    fb.innerHTML = `<strong>${btn ? 'No es esa' : 'Se acabó el tiempo'}</strong>La respuesta correcta es «${esc(q.o[0])}». ${esc(q.e)}`;
+  }
+  fb.insertAdjacentHTML('beforeend', `<div class="row"><button class="go" id="nx" type="button">${i + 1 < QS.length ? 'Siguiente pregunta' : 'Ver resultado'}</button></div>`);
+  $('#nx').onclick = next; $('#nx').focus();
+}
+function next(){ i++; if (i < QS.length) show(); else end(); }
+function end(){
+  const msg = hits >= 18 ? 'Dominas este concepto.' : hits >= 14 ? 'Muy bien, casi todo claro.' : hits >= 10 ? 'Vas bien; repasa las que has fallado.' : 'Vale la pena repasar este bloque y volver a jugar.';
+  card.innerHTML = `<h1>Resultado</h1>
+    <div class="big">${score} puntos</div>
+    <p><b>${hits} aciertos de ${QS.length}</b> · mejor racha: ${best}. ${msg}</p>
+    ${failed.length ? `<div class="review"><p><b>Para repasar</b></p>${failed.map(q => `<div><b>${esc(q.q)}</b><br>${esc(q.o[0])}. ${esc(q.e)}</div>`).join('')}</div>` : ''}
+    <div class="row"><button class="go alt" id="rp" type="button">Jugar otra vez</button></div>`;
+  $('#rp').onclick = start; $('#rp').focus();
+}
+document.addEventListener('keydown', e => {
+  if (['1','2','3','4'].includes(e.key)) { const b = card.querySelectorAll('.opt')[+e.key - 1]; if (b && !b.disabled) answer(b); }
+});
+
+/* Pantalla completa */
+const fsBtn = $('#fs');
+fsBtn.onclick = async () => {
+  try {
+    if (!document.fullscreenElement) { await document.documentElement.requestFullscreen(); }
+    else { await document.exitFullscreen(); }
+  } catch (err) { fsBtn.textContent = 'Pantalla completa no disponible aquí'; }
+};
+document.addEventListener('fullscreenchange', () => {
+  const on = !!document.fullscreenElement;
+  fsBtn.textContent = on ? '✕ Salir de pantalla completa' : '⛶ Pantalla completa';
+  fsBtn.setAttribute('aria-pressed', on);
+  drawWM();
+});
+
+/* Marca de agua: varias capas superpuestas que se regeneran si se eliminan */
+(function(){
+  const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='300' height='170'><g transform='rotate(-22 150 85)' font-family='Arial' font-weight='700' fill='%231F3A5F' fill-opacity='0.07'><text x='10' y='70' font-size='26'>${encodeURIComponent(WM)}</text><text x='120' y='140' font-size='15'>${encodeURIComponent(WM)}</text></g></svg>`;
+  document.documentElement.style.setProperty('--wmtile', `url("data:image/svg+xml;utf8,${svg}")`);
+})();
+function drawWM(){
+  let c = document.getElementById('wm');
+  if (!c) { c = document.createElement('canvas'); c.id = 'wm'; c.setAttribute('aria-hidden', 'true'); document.body.appendChild(c); }
+  c.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:2147483647;display:block;opacity:1;visibility:visible';
+  const dpr = window.devicePixelRatio || 1, W = innerWidth, H = innerHeight;
+  c.width = W * dpr; c.height = H * dpr;
+  const x = c.getContext('2d'); x.setTransform(dpr, 0, 0, dpr, 0, 0); x.clearRect(0, 0, W, H);
+  let seed = 7; const rnd = () => (seed = (seed * 9301 + 49297) % 233280) / 233280;
+  x.save(); x.translate(W / 2, H / 2); x.rotate(-0.38);
+  const R = Math.hypot(W, H);
+  for (let y = -R; y < R; y += 120) {
+    for (let xx = -R + ((y / 120) % 2) * 130; xx < R; xx += 300) {
+      const s = 20 + Math.round(rnd() * 14);
+      x.font = `800 ${s}px Rubik, Arial, sans-serif`;
+      x.fillStyle = `rgba(31,58,95,${0.075 + rnd() * 0.04})`;
+      x.fillText(WM, xx + rnd() * 30, y + rnd() * 20);
+      x.font = `700 11px Arial, sans-serif`;
+      x.fillStyle = 'rgba(231,111,81,0.10)';
+      x.fillText(WM + ' · CC BY-SA', xx + 40, y + 46);
+    }
+  }
+  x.restore();
+}
+addEventListener('resize', drawWM);
+new MutationObserver(() => { const c = document.getElementById('wm'); if (!c || c.style.display === 'none' || c.style.opacity === '0') drawWM(); })
+  .observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['style', 'class'] });
+setInterval(() => { const c = document.getElementById('wm'); if (!c || getComputedStyle(c).display === 'none' || getComputedStyle(c).visibility === 'hidden' || +getComputedStyle(c).opacity < 0.5) drawWM(); }, 1500);
+drawWM();
+intro();
+</script>
+</body>
+</html>

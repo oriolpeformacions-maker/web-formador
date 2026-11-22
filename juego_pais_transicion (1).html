@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Oriol Pérez">
+<meta name="copyright" content="© 2026 Oriol Pérez · CC BY-NC-ND 4.0">
+<title>Tu país hace la transición · CC BY-NC-ND Oriol Pérez</title>
+<style>
+  :root{--ink:#1B2B26;--dark:#12372A;--bg:#EEF6F1;--green:#2E8B57;--red:#E63946;--orange:#F28C28;--blue:#2D7DD2;--yellow:#F6C445;--purple:#7B4FA0;--brown:#8C5A3C;--eu:#1E4FA3}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Arial,"Liberation Sans",Helvetica,sans-serif;color:var(--ink);background:var(--bg);font-size:21px;line-height:1.4}
+  #wm{position:fixed;inset:0;pointer-events:none;z-index:9999;opacity:.08;
+      background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='420' height='190'><g transform='rotate(-24 210 95)' font-family='Arial' font-weight='bold' font-size='19' fill='%2312372A'><circle cx='40' cy='95' r='14' fill='none' stroke='%2312372A' stroke-width='3'/><text x='31' y='101' font-size='14'>cc</text><text x='62' y='101'>CC BY-NC-ND 4.0 · Oriol Pérez</text></g></svg>")}
+  #badge{position:fixed;left:12px;bottom:10px;z-index:10000;background:#fff;border:2px solid var(--dark);border-radius:20px;padding:4px 14px;font-size:15px;font-weight:bold;color:var(--dark)}
+  .topbar{position:sticky;top:0;z-index:50;display:flex;gap:10px;justify-content:flex-end;padding:10px 20px;background:rgba(238,246,241,.92)}
+  .tool{font:inherit;font-size:18px;font-weight:bold;padding:8px 16px;border-radius:999px;border:2px solid var(--dark);background:#fff;color:var(--dark);cursor:pointer}
+  .tool.on{background:var(--dark);color:#fff}
+  .wrap{max-width:1200px;margin:0 auto;padding:6px 20px 80px}
+  h1{font-size:34px;margin:0;color:var(--dark)} h2{font-size:28px;margin:0 0 10px;color:var(--dark)}
+  .pill{display:inline-block;padding:6px 16px;border-radius:999px;color:#fff;font-weight:bold;font-size:17px;background:var(--green)}
+  .card{background:#fff;border-radius:22px;padding:24px;box-shadow:0 3px 10px rgba(0,0,0,.12);margin-top:16px}
+  .hidden{display:none!important}
+  .btn{font:inherit;font-weight:bold;font-size:21px;padding:13px 24px;border-radius:14px;border:none;cursor:pointer;color:#fff;background:var(--dark)}
+  .btn.alt{background:#fff;color:var(--dark);border:3px solid var(--dark)}
+  .btn:focus,.choice:focus,.country:focus,.tool:focus{outline:4px solid var(--yellow)}
+  .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:16px}
+  .countries{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;margin-top:14px}
+  .country{font:inherit;text-align:left;border:none;border-radius:20px;padding:20px;cursor:pointer;color:#fff}
+  .country .emoji{font-size:50px} .country b{font-size:27px;display:block;margin:6px 0} .country p{margin:6px 0;font-size:18px}
+  .timeline{display:flex;justify-content:space-between;gap:6px;margin-top:12px}
+  .timeline span{flex:1;text-align:center;padding:7px 0;border-radius:10px;background:#d6e4dc;font-weight:bold;font-size:17px;color:#4A5560}
+  .timeline span.done{background:var(--green);color:#fff} .timeline span.now{background:var(--orange);color:#fff}
+  .grid{display:grid;grid-template-columns:350px 1fr;gap:16px;align-items:start}
+  @media (max-width:950px){.grid{grid-template-columns:1fr}}
+  .ind{margin:9px 0}
+  .ind .lab{display:flex;justify-content:space-between;font-weight:bold;font-size:18px}
+  .ind .track{position:relative;height:20px;background:#e2ebe6;border-radius:999px;overflow:hidden;margin-top:3px}
+  .ind .fill{height:100%;border-radius:999px;transition:width .6s}
+  .ind .goal{position:absolute;top:-3px;bottom:-3px;width:4px;background:var(--ink)}
+  .note{font-size:15px;color:#4A5560}
+  .mix{display:flex;height:26px;border-radius:999px;overflow:hidden;margin-top:4px;font-size:14px;font-weight:bold;color:#fff}
+  .mix div{display:flex;align-items:center;justify-content:center;transition:width .6s}
+  .choice{display:flex;gap:14px;align-items:flex-start;width:100%;text-align:left;font:inherit;font-size:21px;padding:14px 16px;border-radius:16px;border:3px solid #cfdcd5;background:#fff;cursor:pointer;color:var(--ink);margin-top:10px}
+  .choice:hover{border-color:var(--dark)}
+  .choice .l{flex:0 0 46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:bold;font-size:22px}
+  .choice small{display:block;font-size:16px;color:#4A5560;margin-top:4px}
+  .choice[disabled]{cursor:default;opacity:.5} .choice.picked{opacity:1;border-color:var(--dark);background:#F3F8F5}
+  .res{margin-top:14px;padding:16px;border-radius:16px;background:#FFF4CC;font-size:20px}
+  .chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:9px}
+  .chip{padding:5px 11px;border-radius:999px;font-weight:bold;font-size:16px;color:#fff}
+  .event{border:4px dashed var(--orange)} .event.good{border-color:var(--green)} .event.pact{border-color:var(--eu)}
+  .check{display:flex;gap:14px;align-items:center;padding:10px 0;border-bottom:1px solid #e2ebe6;font-size:20px}
+  .check .ic{font-size:32px;flex:0 0 44px;text-align:center}
+  .tag{font-size:15px;font-weight:bold;padding:4px 10px;border-radius:999px;color:#fff;white-space:nowrap}
+  table.flow{width:100%;border-collapse:collapse;font-size:19px;margin-top:8px}
+  table.flow td{padding:7px 8px;border-bottom:1px solid #e2ebe6} table.flow td:last-child{text-align:right;font-weight:bold;white-space:nowrap}
+  .pos{color:var(--green)} .neg{color:var(--red)}
+  .comp{margin-top:6px;font-size:16px}
+  .comp div{padding:7px 10px;border-radius:10px;margin-top:6px;background:#EEF3FB;border-left:0}
+  .comp .bad{background:#FDE7E8} .comp .ok{background:#D8F0E1}
+</style>
+</head>
+<body>
+<div id="wm" aria-hidden="true"></div>
+<div id="badge">CC BY-NC-ND 4.0 · Oriol Pérez</div>
+<div class="topbar">
+  <button class="tool" id="snd" aria-pressed="false">🔇 Sonido: no</button>
+  <button class="tool" id="fs">⛶ Pantalla completa</button>
+</div>
+<div class="wrap">
+  <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap">
+    <span class="pill">JUEGO 2</span><h1>Tu país hace la transición</h1>
+  </div>
+
+  <section id="intro" class="card">
+    <p style="font-size:24px;margin-top:0">Gobiernas un país de la Unión Europea de <b>2026 a 2050</b>. Tu país vive de una economía que funciona con <b>energía fósil</b>: da empleo, dinero y luz. Cambiarla cuesta, y no cambiarla también.</p>
+    <p><b>Lo que te obliga:</b></p>
+    <ul>
+      <li><b>Pacto Verde (ley europea):</b> en 2030, emisiones como mucho al <b>45 %</b> de 1990; en 2050, <b>10 % o menos</b>. Si no cumples, la Comisión abre un expediente y el Tribunal de Justicia de la UE puede <b>multarte</b>.</li>
+      <li><b>Mercado de CO₂ europeo:</b> cada tonelada que emiten tus centrales y fábricas se paga, y el precio <b>sube cada periodo</b>.</li>
+      <li><b>Directiva de residuos:</b> no puedes enterrar la basura sin control.</li>
+    </ul>
+    <p><b>Lo que puedes firmar:</b> pactos con otros países, empresas o sindicatos. Dan ventajas, pero <b>obligan</b>. Si los rompes, hay <b>sanciones</b>.</p>
+    <p><b>Cuidado con el transporte:</b> el tren de cercanías está viejo y falla. Si no inviertes, se degrada cada periodo y la gente seguirá usando el coche.</p>
+    <p><b>Cuidado con la energía:</b> si cierras centrales sin tener otra fuente preparada, habrá <b>apagones</b>. Y si la gente se enfada, puedes perder las elecciones.</p>
+    <div class="row"><button class="btn" id="go">Elegir mi país ➜</button><button class="btn alt" id="sayIntro">🔊 Escuchar</button></div>
+  </section>
+
+  <section id="pick" class="card hidden">
+    <h2>¿Qué país quieres gobernar?</h2>
+    <div class="countries" id="countries"></div>
+  </section>
+
+  <section id="play" class="hidden">
+    <div class="card" style="padding:16px 20px">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
+        <div style="font-size:25px;font-weight:bold" id="cname"></div>
+        <div style="font-size:28px;font-weight:bold;color:var(--orange)" id="year"></div>
+      </div>
+      <div class="timeline" id="timeline"></div>
+    </div>
+    <div class="grid">
+      <div>
+        <div class="card" id="inds"></div>
+        <div class="card" id="comps"></div>
+      </div>
+      <div class="card" id="stage"></div>
+    </div>
+  </section>
+
+  <section id="end" class="card hidden"></section>
+  <p style="font-size:15px;margin-top:30px;color:#4A5560">© 2026 Oriol Pérez · Licencia Creative Commons BY-NC-ND 4.0: se puede compartir citando la autoría, sin uso comercial y sin modificarlo. Juego basado en la presentación «Transición ecológica, paso a paso». El modelo y las cifras están simplificados para aprender; los mecanismos (mercado de CO₂, expedientes de la Comisión, multas del Tribunal de Justicia de la UE, fondos condicionados, contratos de gas a largo plazo) existen en la realidad.</p>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+// ---------- sound & fullscreen ----------
+let SOUND=false;
+try{ SOUND = localStorage.getItem("tp_sound")==="1"; }catch(e){}
+function renderSound(){ $("snd").textContent = SOUND ? "🔊 Sonido: sí" : "🔇 Sonido: no"; $("snd").classList.toggle("on",SOUND); $("snd").setAttribute("aria-pressed",SOUND); }
+$("snd").onclick=()=>{ SOUND=!SOUND; try{localStorage.setItem("tp_sound",SOUND?"1":"0");}catch(e){} if(!SOUND && "speechSynthesis" in window) speechSynthesis.cancel(); renderSound(); };
+renderSound();
+function say(t,force){ // force = the user pressed an «Escuchar» button
+  if(!("speechSynthesis" in window)) return;
+  speechSynthesis.cancel();
+  if(!SOUND && !force) return;
+  const u=new SpeechSynthesisUtterance(t.replace(/[\u{1F300}-\u{1FAFF}☀-➿]/gu,"")); u.lang="es-ES"; u.rate=.92;
+  const v=speechSynthesis.getVoices().find(v=>v.lang&&v.lang.startsWith("es")); if(v)u.voice=v; speechSynthesis.speak(u);
+}
+function fsToggle(){
+  const d=document, el=d.documentElement;
+  const on = d.fullscreenElement || d.webkitFullscreenElement;
+  if(!on){ (el.requestFullscreen||el.webkitRequestFullscreen||function(){}).call(el); }
+  else { (d.exitFullscreen||d.webkitExitFullscreen||function(){}).call(d); }
+}
+$("fs").onclick=fsToggle;
+["fullscreenchange","webkitfullscreenchange"].forEach(ev=>document.addEventListener(ev,()=>{
+  const on=document.fullscreenElement||document.webkitFullscreenElement; $("fs").textContent= on?"⛶ Salir de pantalla completa":"⛶ Pantalla completa"; $("fs").classList.toggle("on",!!on);}));
+
+// ---------- model ----------
+const IND = {
+  em:  {n:"Emisiones de CO₂", c:"#E63946", icon:"🏭", low:true, help:"% de las de 1990. Cuanto más bajo, mejor."},
+  en:  {n:"Energía garantizada", c:"#F28C28", icon:"⚡", help:"Si baja de 40, hay apagones."},
+  rail:{n:"Tren y transporte público", c:"#1A7FA0", icon:"🚆", help:"Si está por debajo de 40, falla y la gente se queja."},
+  emp: {n:"Empleo", c:"#2D7DD2", icon:"👷", help:"Trabajo para la gente."},
+  din: {n:"Dinero del país", c:"#2E8B57", icon:"💶", help:"Presupuesto. Si llega a 0, recortes."},
+  apo: {n:"Apoyo de la gente", c:"#7B4FA0", icon:"🙋", help:"Si baja de 35, pierdes las elecciones."},
+  nat: {n:"Naturaleza", c:"#56A845", icon:"🌳", help:"Bosques, agua, ríos y mares."}
+};
+const COUNTRIES = [
+  {k:"carb", name:"Carbonia", emoji:"⛏️", color:"#5E6E7A", desc:"Minas de carbón y acerías. Exporta carbón y acero: el carbón da empleo y dinero.",
+   pro:"Mucho empleo industrial y energía propia.", con:"Si deja el carbón, pierde ingresos y puestos de trabajo.", s:{em:92,en:75,rail:45,emp:70,din:50,apo:60,nat:40,fos:85},
+   flows:[{t:"Exportación de carbón y acero", f:(S)=>Math.round(S.fos/11)}]},
+  {k:"sol", name:"Solmar", emoji:"🛳️", color:"#9A6F00", desc:"País de costa con mucho sol. Recibe muchísimo dinero del turismo y los cruceros, y compra fuera el petróleo y el gas.",
+   pro:"Grandes ingresos por turismo; sol y viento abundantes.", con:"Cruceros y vuelos contaminan; sequías, incendios y un tren de cercanías viejo.", s:{em:80,en:65,rail:35,emp:60,din:50,apo:65,nat:50,fos:75},
+   flows:[{t:"Turismo y cruceros", f:(S)=>S.cruiseCap?6:9},{t:"Factura de petróleo y gas importados", f:(S)=>-Math.round(S.fos/11)}]},
+  {k:"nord", name:"Nordlandia", emoji:"🚗", color:"#1E4FA3", desc:"País rico con grandes fábricas de coches de gasolina y diésel.",
+   pro:"Mucho dinero, buen tren y tecnología.", con:"Su industria del motor depende del coche de combustión.", s:{em:75,en:75,rail:60,emp:75,din:75,apo:55,nat:50,fos:65},
+   flows:[{t:"Ventas de la industria del motor", f:(S)=>S.combustion?5:2}]},
+  {k:"est", name:"Estelia", emoji:"🔥", color:"#8C3B3B", desc:"País frío del este. Necesita mucho gas para la calefacción y la industria, y lo recibe por un gasoducto que pasa cerca de una zona en guerra.",
+   pro:"Industria química y calefacción central en las ciudades.", con:"Depende del gas de un vecino en conflicto: cortes y precios disparados.", s:{em:85,en:60,rail:40,emp:65,din:50,apo:60,nat:50,fos:80},
+   flows:[{t:"Compra de gas por el gasoducto", f:(S)=>-Math.round(S.fos/8)}], gasRisk:true},
+  {k:"mont", name:"Montania", emoji:"⛰️", color:"#4F6B3A", desc:"País de montaña con poca población dispersa. Construir redes, vías de tren o parques eólicos es lento y caro: permisos, orografía y pocas empresas.",
+   pro:"Mucha agua y viento; recibe fondos europeos de cohesión.", con:"Todas las obras tardan más y cuestan más: las medidas verdes rinden menos.", s:{em:80,en:65,rail:25,emp:55,din:45,apo:60,nat:65,fos:70},
+   flows:[{t:"Fondos europeos de cohesión", f:()=>5}], infra:0.6}
+];
+const YEARS=[2026,2028,2030,2034,2038,2044,2048];
+const ETS=[0.9,1.2,1.5,1.9,2.3,2.7,3.1]; // carbon price index per period
+
+// Decisions: e=effects (em,en,emp,din,apo,nat,fos), m=country modifiers, flag=state changes
+const DEC = [
+ {topic:"Energía", title:"Tus centrales de carbón y gas dan casi toda la luz. ¿Qué haces?", ctx:"Cada tonelada de CO₂ se paga en el mercado europeo y el precio sube. Pero esas centrales dan luz segura y empleo.",
+  o:[
+   {t:"Plan de sol y viento con redes y baterías, cerrando el carbón poco a poco", s:"Caro al principio; la luz limpia llega en unos años.", e:{em:-17,fos:-20,din:-16,en:4,emp:4,apo:2}, m:{sol:{em:-4,fos:-5,din:4}}, flag:{green:1}, x:"Las renovables necesitan inversión antes de producir. Bajan las emisiones y la factura de CO₂ de los próximos años, pero hoy el presupuesto lo nota."},
+   {t:"Pasar del carbón al gas como «puente»", s:"Emite menos que el carbón, pero sigue siendo fósil.", e:{em:-8,fos:-4,din:-8,en:6,apo:2}, flag:{gas:1}, x:"El gas emite cerca de la mitad que el carbón al producir electricidad, pero depende de importaciones y de precios internacionales."},
+   {t:"Mantener las centrales como están", s:"Luz segura y empleo hoy.", e:{em:2,din:4,en:4,apo:2,nat:-3}, x:"No cuesta inversión, pero la factura del mercado de CO₂ crecerá cada periodo y el país se aleja de la meta de 2030."},
+   {t:"Cerrar todas las centrales de carbón este año", s:"Sin alternativa preparada.", e:{em:-22,fos:-28,en:-32,emp:-12,apo:-10}, m:{carb:{emp:-10,apo:-5}}, flag:{closeNoPlan:1}, x:"Las emisiones bajan de golpe, pero sin otra fuente la energía disponible cae. Es el mayor riesgo de apagones."}
+  ]},
+ {topic:"Empleo", title:"Las comarcas mineras e industriales pierden trabajo", ctx:"Miles de personas dependen de minas, centrales y fábricas que contaminan.",
+  o:[
+   {t:"Fondo de transición justa: formación, empleos verdes y prejubilaciones pactadas", s:"Lo hicieron España y los sindicatos en 2018 con la minería del carbón.", e:{din:-12,emp:9,apo:8,em:-3}, m:{carb:{emp:4,apo:3}}, flag:{green:1}, x:"Cuesta dinero, pero mantiene el apoyo social. La UE cofinancia este tipo de planes con su Fondo de Transición Justa."},
+   {t:"Subvencionar las minas para que sigan abiertas", s:"Las ayudas a las minas no competitivas están limitadas por la UE.", e:{din:-12,em:4,emp:3,apo:4,fos:3}, flag:{stateAid:1}, x:"Salva empleos unos años, pero la UE limita estas ayudas y la Comisión puede exigir devolverlas."},
+   {t:"No intervenir: que decidan las empresas", s:"Sin gasto público.", e:{emp:-9,apo:-10,din:3}, m:{carb:{emp:-6,apo:-5}}, x:"Sin plan, las empresas cierran según su cuenta de resultados y el paro se concentra en las mismas comarcas."}
+  ]},
+ {topic:"Transporte", title:"El tren de cercanías falla y el transporte sigue con petróleo", ctx:"Vías viejas, averías y retrasos: mucha gente deja el tren y va en coche. Sin inversión, el transporte público no puede crecer.",
+  o:[
+   {t:"Gran inversión en el tren: renovar vías, trenes y señalización, y más autobuses", s:"Muy caro y con años de obras antes de notarse.", e:{rail:32,din:-16,em:-5,fos:-4,apo:-3,emp:4}, flag:{green:1}, x:"Las obras molestan y cuestan, pero un tren fiable es lo que permite que la gente deje el coche. El efecto en emisiones crece cada periodo si el tren funciona bien."},
+   {t:"Ayudas para comprar coche eléctrico", s:"Aumenta la demanda de electricidad; el tren sigue igual.", e:{em:-7,fos:-6,din:-10,apo:4,en:-5}, m:{nord:{emp:3}}, flag:{green:1}, x:"Electrificar coches baja el petróleo pero sube el consumo de luz, y no arregla los atascos ni el tren."},
+   {t:"Bajar los impuestos de la gasolina y el gasóleo", s:"Popular a corto plazo.", e:{em:6,fos:4,din:-10,apo:8,nat:-2,rail:-5}, x:"Sube el apoyo, pero también las emisiones; el Estado ingresa menos y no queda dinero para el tren."}
+  ]},
+ {topic:"Residuos", title:"Los vertederos están casi llenos", ctx:"Hoy solo se recicla 4 de cada 10 bolsas.",
+  o:[
+   {t:"Recogida de orgánica, retorno de envases y ley de reparación", s:"Cumple la Ley de Residuos y las directivas.", e:{em:-5,nat:8,emp:4,din:-6,apo:2}, flag:{green:1}, x:"Economía circular: crea empleo local y evita multas, aunque requiere inversión."},
+   {t:"Abrir un vertedero nuevo", s:"Lo más barato hoy.", e:{din:4,nat:-10,em:3}, flag:{landfill:1}, x:"Más barato a corto plazo, pero incumple la directiva europea de vertederos. Puede llegar un expediente."},
+   {t:"Construir una incineradora que produce energía", s:"Da electricidad, pero quema materiales.", e:{din:-8,en:4,em:-2,nat:2}, x:"Recupera energía de la basura, pero está en el penúltimo escalón: los materiales se pierden y se emite CO₂."}
+  ]},
+ {topic:"Industria", title:"Tu industria pesada compite con países sin reglas de CO₂", ctx:"Acero, cemento y abonos fabricados fuera son más baratos porque no pagan por su CO₂.",
+  o:[
+   {t:"Modernizar la industria con hidrógeno verde y electricidad limpia", s:"Inversión grande; protegida por el arancel europeo al carbono (CBAM).", e:{em:-10,fos:-8,din:-12,emp:4,en:-4}, m:{carb:{emp:4}}, flag:{green:1}, x:"El CBAM hace pagar a las importaciones por su CO₂, lo que protege a quien fabrica limpio. Pero hay que invertir y gastar más electricidad."},
+   {t:"Pedir a la UE una excepción para tu industria", s:"Negociar tiempo.", e:{din:3,em:2,apo:1}, flag:{exception:1}, x:"Ganas tiempo, pero la industria sigue pagando el CO₂ cada periodo y queda atrás tecnológicamente."},
+   {t:"Trasladar las fábricas a países sin normas", s:"Ahorro inmediato.", e:{em:-6,emp:-12,apo:-8,din:4}, x:"Tus emisiones bajan en el papel, pero el CO₂ se emite en otro país («fuga de carbono») y se pierden empleos."}
+  ]},
+ {topic:"Naturaleza", title:"Campo, bosques y costa bajo presión", ctx:"Sequías, incendios y pérdida de especies.",
+  o:[
+   {t:"Proteger el 30 % del territorio, reforestar y reducir abonos", s:"Los bosques absorben CO₂.", e:{em:-8,nat:12,din:-6,emp:2,apo:-1}, flag:{green:1}, x:"Ayuda a la neutralidad y a la biodiversidad. Parte del sector agrario protesta por las restricciones."},
+   {t:"Más regadío y fertilizantes para producir más", s:"Más producción agraria.", e:{nat:-10,em:3,emp:4,apo:3}, m:{sol:{nat:-4}}, x:"Toca dos límites planetarios: agua dulce y nitrógeno y fósforo."},
+   {t:"Urbanizar la costa para turismo", s:"Ingresos rápidos.", e:{din:8,nat:-12,emp:4}, m:{sol:{din:3}}, x:"Da ingresos, pero destruye ecosistemas que protegen de temporales y choca con la Ley de Costas."}
+  ]},
+ {topic:"Edificios", title:"Último periodo: casas y calefacción", ctx:"Muchas viviendas se calientan con gas o gasóleo y pierden calor.",
+  o:[
+   {t:"Aislar viviendas y poner bombas de calor, con ayudas según ingresos", s:"Gasto alto; más demanda de electricidad.", e:{em:-12,fos:-10,din:-10,apo:5,emp:5,en:-3}, flag:{green:1}, x:"La eficiencia reduce el consumo total; las ayudas por renta hacen que la medida sea justa."},
+   {t:"Impuesto al CO₂ con devolución en cheque a cada familia", s:"Ingresos que vuelven a la gente.", e:{em:-8,fos:-6,din:2,apo:-2}, flag:{green:1}, x:"«Quien contamina paga». Funciona, pero cuesta explicarlo y genera rechazo inicial."},
+   {t:"Comprar créditos de carbono a otros países", s:"No cambia nada dentro del país.", e:{din:-10,em:-3}, x:"El Pacto Verde exige que la reducción sea sobre todo interna: los créditos externos tienen un papel limitado."}
+  ]}
+];
+// Pacts offered (one per period in some periods)
+const PACTS = [
+ {at:0, id:"coal", t:"🤝 Alianza internacional para abandonar el carbón", d:"Un grupo de países te invita a firmar: cerrar el carbón antes de 2034. A cambio, recibes apoyo financiero y prestigio.",
+  sign:{e:{din:7,apo:3}, x:"Has firmado. Obligación: en 2034, la energía fósil debe ser como mucho del 45 %."},
+  no:{e:{}, x:"No firmas. No hay obligación, pero tampoco ayuda."},
+  check:{at:2034, ok:(S)=>S.fos<=45, fail:{e:{din:-10,apo:-5}, x:"Has incumplido la Alianza: devuelves las ayudas y pierdes credibilidad internacional."}, pass:"Cumples la Alianza del carbón."}},
+ {at:1, id:"gas", t:"📜 Contrato de gas a 20 años", d:"Un país exportador te ofrece gas barato y seguro si firmas un contrato hasta 2046 con compra mínima.",
+  sign:{e:{en:14,din:6}, x:"Has firmado. Obligación: hasta 2046 la energía fósil no puede bajar del 30 %. Si lo incumples, pagas penalización."},
+  no:{e:{}, x:"No firmas. Mantienes la libertad, pero tu energía depende de los precios del mercado."},
+  check:{at:2044, ok:(S)=>S.fos>=30, fail:{e:{din:-14}, x:"Has comprado menos gas del contratado: pagas la penalización del contrato («take or pay»)."}, pass:"Cumples el contrato de gas."}},
+ {at:2, id:"union", t:"✍️ Pacto con sindicatos y empresas", d:"Sindicatos y patronal proponen un acuerdo: ninguna planta cerrará sin un plan de empleo para su plantilla.",
+  sign:{e:{apo:6,emp:2}, x:"Has firmado. Obligación: no cerrar instalaciones sin plan. Si lo haces, habrá huelga general."},
+  no:{e:{apo:-2}, x:"No firmas. Los sindicatos lo critican."},
+  check:null},
+ {at:3, id:"funds", t:"🇪🇺 Fondos europeos condicionados", d:"Bruselas ofrece un paquete grande de fondos, pero con condiciones: al menos 2 de tus próximas 3 decisiones deben ser verdes.",
+  sign:{e:{din:14}, x:"Aceptas. Obligación: 2 de las próximas 3 decisiones, verdes. Si no, devuelves el dinero."},
+  no:{e:{}, x:"Rechazas. Sin fondos, pero sin condiciones."},
+  check:{at:2048, ok:(S)=>S.greenSinceFunds>=2, fail:{e:{din:-14,apo:-3}, x:"No has cumplido las condiciones: la Comisión reclama los fondos."}, pass:"Cumples las condiciones de los fondos europeos."}}
+];
+const EVENTS = [
+ {t:"⛽ Crisis del gas por una guerra", d:"El precio del gas y del petróleo se multiplica. Cuanto más fósil importas, más pagas.", auto:(S,C)=>C.gasRisk?{din:-Math.round(S.fos/7),en:-8}:{din:-Math.round(S.fos/9)},
+  o:[{t:"Ayudas generales para pagar la factura", e:{din:-8,apo:5,em:1}, x:"Alivia a las familias, pero el dinero público se va a pagar combustible."},
+     {t:"Ayudas solo a hogares vulnerables y acelerar renovables", e:{din:-6,em:-4,fos:-4,apo:1}, x:"Protege a quien más lo necesita y reduce la dependencia futura."}]},
+ {t:"🔥 Ola de calor e incendios", d:"Más de 40 °C durante semanas. Arden miles de hectáreas.", auto:(S)=>({nat:-4}),
+  o:[{t:"Prevención: gestión forestal y apoyo al campo", e:{din:-6,nat:4,apo:3}, x:"Prevenir reduce el riesgo de los próximos veranos."},
+     {t:"Solo extinción cuando hay fuego", e:{din:-3,nat:-5,apo:-3}, x:"Es más barato este año, pero el riesgo se acumula."}], m:{sol:{nat:-3}}},
+ {t:"✊ Huelga del transporte por el precio del gasóleo", d:"Camioneros y agricultores bloquean carreteras.", auto:()=>({emp:-2}),
+  o:[{t:"Negociar ayudas temporales y un calendario", e:{din:-5,apo:5,em:1}, x:"Se desbloquea el conflicto con un coste."},
+     {t:"Mantener las medidas sin cambios", e:{apo:-9}, x:"El conflicto se alarga y el apoyo cae."}]},
+ {t:"📱 Campaña de desinformación", d:"Se viraliza que la transición «es un invento» y que «subirá todo».", auto:()=>({}),
+  o:[{t:"Informar con datos y fuentes oficiales", e:{din:-2,apo:5}, x:"La información verificable reduce el efecto de los bulos."},
+     {t:"No responder", e:{apo:-7}, x:"La desinformación se extiende sin respuesta."}]},
+ {t:"💧 Sequía de dos años", d:"Embalses al 20 %. Las centrales hidroeléctricas producen menos.", auto:()=>({en:-6}),
+  o:[{t:"Ahorro de agua y reutilización de agua depurada", e:{din:-5,nat:4}, x:"Reduce la presión sobre el agua dulce."},
+     {t:"Desaladoras alimentadas con gas", e:{din:-4,em:4,en:-2,fos:2}, x:"Hay agua, pero con más emisiones y más consumo de energía."}], m:{sol:{nat:-3}}},
+ {t:"🚗 Coches eléctricos importados más baratos", d:"Llegan eléctricos asiáticos más baratos que los fabricados en tu país.", auto:(S,C)=>C.k==="nord"?{emp:-4}:{},
+  o:[{t:"Apoyar a tus fábricas para producir eléctricos", e:{din:-8,emp:5,em:-3}, flag:{noCombustion:1}, x:"Transformar la industria protege el empleo de futuro."},
+     {t:"Pedir que se retrase la prohibición de la combustión", e:{em:4,emp:3,apo:2}, x:"Es lo que votó una comisión del Parlamento Europeo en 2026: protege empleos hoy, con más CO₂ durante más años."}]},
+ {t:"🌍 Un gran emisor abandona el Acuerdo de París", d:"Uno de los países que más contamina deja de cumplir sus compromisos.", auto:()=>({}),
+  o:[{t:"Mantener tus compromisos y buscar aliados", e:{apo:1,em:-2}, x:"ODS 17: las alianzas sostienen los acuerdos."},
+     {t:"Frenar tus medidas", e:{em:5,din:3,apo:-2}, x:"Ahorras hoy, pero sigues obligado por la ley europea."}]},
+ {only:"sol", first:true, t:"🛳️ Récord de cruceros en tu puerto", d:"Llegan más cruceros que nunca. Dejan mucho dinero, pero sus motores contaminan el aire de la ciudad y el puerto se satura.", auto:()=>({din:4,nat:-2}),
+  o:[{t:"Tasa por pasajero, límite de cruceros y obligar a conectarse a la red eléctrica en el puerto", e:{din:-2,em:-4,nat:4,apo:2,emp:-2}, flag:{cruiseCap:1}, x:"Ingresas menos por cruceros cada periodo, pero baja la contaminación del puerto. Varias ciudades europeas ya limitan los cruceros."},
+     {t:"Ampliar la terminal para recibir todavía más cruceros", e:{din:6,em:5,nat:-5,emp:3,apo:-2}, x:"Más ingresos, pero más emisiones y quejas vecinales por saturación."}]},
+ {only:"sol", t:"🌡️ Verano extremo: caen las reservas de turistas", d:"Olas de calor de 44 °C y restricciones de agua. Parte del turismo cambia de destino.", auto:()=>({din:-6,emp:-3}),
+  o:[{t:"Plan de adaptación: sombra, agua regenerada y turismo fuera de temporada", e:{din:-5,nat:3,apo:3,emp:2}, x:"Adaptarse cuesta, pero protege la principal fuente de ingresos del país."},
+     {t:"Campaña de publicidad y esperar al año que viene", e:{din:-2,apo:-2}, x:"El problema volverá con el próximo verano extremo."}]},
+ {only:"est", first:true, t:"💥 Sabotaje en el gasoducto", d:"Un ataque en la zona de conflicto corta el gasoducto. Las ciudades se quedan sin calefacción en pleno invierno.", auto:()=>({en:-14,apo:-4}),
+  o:[{t:"Conectarse a la red europea, almacenar gas y acelerar bombas de calor y renovables", e:{din:-10,en:12,fos:-6,em:-4}, x:"La solidaridad europea y la energía propia reducen la vulnerabilidad. Es lo que hicieron varios países del este tras 2022."},
+     {t:"Comprar gas licuado en barco a otro proveedor, más caro", e:{din:-12,en:10}, x:"Recuperas la calefacción, pero pagas mucho más y sigues dependiendo del gas."}]},
+ {only:"est", t:"🛡️ Presión del vecino en guerra", d:"El país vecino amenaza con subir el precio del gas si apoyas sanciones europeas contra él.", auto:(S)=>({din:-Math.round(S.fos/14)}),
+  o:[{t:"Mantener las sanciones junto a la UE", e:{apo:2,din:-4}, x:"Cumples con tus socios europeos, aunque la energía te cuesta más este periodo."},
+     {t:"Pedir una excepción para seguir comprando gas barato", e:{din:5,apo:-4}, flag:{euConflict:1}, x:"Ahorras dinero, pero la Comisión abre un expediente por no aplicar las sanciones comunes."}]},
+ {only:"mont", first:true, t:"🏗️ Las obras no avanzan", d:"Los parques eólicos y la nueva línea eléctrica llevan años parados: permisos, recursos judiciales y pocas empresas que quieran trabajar en la montaña.", auto:()=>({en:-5}),
+  o:[{t:"Ventanilla única de permisos con evaluación ambiental rápida y empresas públicas", e:{din:-6,en:6,nat:-2}, flag:{fasterInfra:1}, x:"Las obras se aceleran; a partir de ahora tus medidas verdes rinden más. Hay que vigilar el impacto en la naturaleza."},
+     {t:"Esperar a que se resuelvan los trámites", e:{apo:-3}, x:"Sigue el retraso: tus medidas verdes continúan rindiendo menos."}]},
+ {only:"mont", t:"🚧 Un alud corta la única línea de tren", d:"La línea de tren que une los valles queda cortada meses. No hay alternativa.", auto:()=>({rail:-10,emp:-2}),
+  o:[{t:"Reconstruirla más segura y con autobuses de refuerzo", e:{din:-8,rail:12,apo:2}, x:"Costoso, pero el transporte público vuelve a funcionar."},
+     {t:"Sustituirla por una carretera nueva", e:{din:-6,em:3,nat:-4,rail:-5}, x:"Más rápido, pero más coches y más emisiones."}]},
+ {t:"🚆 Caos en los trenes", d:"Averías, retrasos y cancelaciones. Miles de personas llegan tarde al trabajo.", auto:(S)=>S.rail<50?{apo:-5,emp:-2}:{apo:-1},
+  o:[{t:"Plan de choque: mantenimiento, más personal y trenes nuevos", e:{din:-9,rail:16,apo:3}, x:"El tren mejora; con un tren fiable más gente deja el coche."},
+     {t:"Subir el precio del billete para pagar el mantenimiento", e:{din:2,rail:5,apo:-6,em:2}, x:"Hay algo más de dinero, pero parte de los viajeros vuelve al coche."}]},
+ {t:"🔋 Las baterías bajan de precio", d:"Un avance tecnológico abarata el almacenamiento de energía.", auto:()=>({}), good:true,
+  o:[{t:"Instalar baterías junto a las renovables", e:{en:10,din:-4,em:-3,fos:-3}, x:"Almacenar energía permite cerrar centrales fósiles sin apagones."},
+     {t:"Esperar a que bajen más", e:{en:2}, x:"La tecnología ayuda, pero hay que aprovecharla."}]}
+];
+
+let C=null,S=null,turn=0,history=[],em2030=null,lost=0,evLeft=[],pacts={},sanctions=[],expediente=false,flowLog=null;
+
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function applyEff(e,mod){
+  const all=Object.assign({},e||{}); if(mod&&mod[C.k]) for(const k in mod[C.k]) all[k]=(all[k]||0)+mod[C.k][k];
+  const out={};
+  for(const k in all){ const max=k==="em"?120:100; const b=S[k]; S[k]=clamp(S[k]+all[k],0,max); out[k]=Math.round(S[k]-b); }
+  return out;
+}
+function chips(d){
+  return `<div class="chips">`+Object.keys(d).filter(k=>d[k]!==0&&(IND[k]||k==="fos")).map(k=>{
+    const lowGood = k==="em"||k==="fos"; const good= lowGood? d[k]<0 : d[k]>0;
+    const name = k==="fos" ? "Energía fósil" : IND[k].n, icon = k==="fos" ? "🛢️" : IND[k].icon;
+    return `<span class="chip" style="background:${good?"#2E8B57":"#E63946"}">${icon} ${name} ${d[k]>0?"▲ +"+d[k]:"▼ −"+Math.abs(d[k])}</span>`;}).join("")+`</div>`;
+}
+function renderInds(){
+  let h=`<h2 style="font-size:22px">Tu país</h2>`;
+  h+=`<div class="ind"><div class="lab"><span>🛢️ Mix de energía</span><span>${Math.round(S.fos)} % fósil</span></div>
+      <div class="mix"><div style="width:${S.fos}%;background:#5E6E7A">${S.fos>=18?"fósil":""}</div><div style="width:${100-S.fos}%;background:#2E8B57">${100-S.fos>=18?"limpia":""}</div></div></div>`;
+  for(const k in IND){
+    const v=Math.round(S[k]), max=k==="em"?120:100;
+    let goal = k==="em" ? `<div class="goal" style="left:${45/120*100}%"></div><div class="goal" style="left:${10/120*100}%;background:#2E8B57"></div>` : k==="en" ? `<div class="goal" style="left:40%;background:#E63946"></div>` : "";
+    const warn=(k==="apo"&&v<35)||(k==="din"&&v<12)||(k==="emp"&&v<45)||(k==="nat"&&v<35)||(k==="en"&&v<40)||(k==="rail"&&v<40);
+    h+=`<div class="ind"><div class="lab"><span>${IND[k].icon} ${IND[k].n}</span><span style="color:${warn?"#E63946":"inherit"}">${v}${k==="em"?" %":""}${warn?" ⚠️":""}</span></div>
+      <div class="track"><div class="fill" style="width:${v/max*100}%;background:${IND[k].c}"></div>${goal}</div><div class="note">${IND[k].help}</div></div>`;
+  }
+  $("inds").innerHTML=h;
+  // commitments panel
+  let c=`<h2 style="font-size:22px">Obligaciones y pactos</h2><div class="comp">`;
+  c+=`<div><b>Pacto Verde (obligatorio):</b> 2030 ≤ 45 %; 2050 ≤ 10 %.${expediente?" <b style='color:#E63946'>Expediente abierto.</b>":""}</div>`;
+  c+=`<div><b>Mercado de CO₂:</b> pagas por cada tonelada. Precio este periodo: ×${ETS[Math.min(turn,6)]}.</div>`;
+  for(const id in pacts){ const P=PACTS.find(p=>p.id===id); c+=`<div class="${pacts[id]==="fail"?"bad":pacts[id]==="ok"?"ok":""}"><b>${P.t.replace(/^\S+\s/,"")}</b> · ${pacts[id]==="fail"?"incumplido":pacts[id]==="ok"?"cumplido":"en vigor"}</div>`; }
+  if(sanctions.length) c+=`<div class="bad"><b>Sanciones recibidas:</b> ${sanctions.length}<br>${sanctions.map(x=>"· "+x).join("<br>")}</div>`;
+  c+=`</div>`; $("comps").innerHTML=c;
+}
+function renderTimeline(){
+  $("timeline").innerHTML=YEARS.concat([2050]).map((y,i)=>`<span class="${i<turn?"done":i===turn?"now":""}">${y}</span>`).join("");
+  $("year").textContent= turn<YEARS.length ? "Periodo "+YEARS[turn]+"–"+(YEARS[turn+1]||2050) : "Año 2050";
+}
+function start(c){
+  C=c; S=Object.assign({},c.s,{combustion:true,greenSinceFunds:0,cruiseCap:false,infra:c.infra||1}); turn=0; history=[]; em2030=null; lost=0; pacts={}; sanctions=[]; expediente=false;
+  const pool=EVENTS.filter(e=>!e.only||e.only===c.k);
+  const firsts=pool.filter(e=>e.first), specific=pool.filter(e=>e.only&&!e.first), gen=shuffle(pool.filter(e=>!e.only));
+  if(c.gasRisk){ const g=gen.findIndex(e=>e.t.startsWith("⛽")); if(g>0) gen.unshift(gen.splice(g,1)[0]); }
+  evLeft=gen.slice(0,7); evLeft.splice(0,0,...firsts); if(specific.length) evLeft.splice(3,0,...specific); evLeft=evLeft.slice(0,7);
+  $("pick").classList.add("hidden"); $("play").classList.remove("hidden"); $("cname").innerHTML=`${c.emoji} ${c.name}`;
+  showDecision();
+}
+function showDecision(){
+  renderTimeline(); renderInds();
+  const D=DEC[turn], L=["A","B","C","D"], LC=["#2D7DD2","#F28C28","#7B4FA0","#8C5A3C"];
+  const order=shuffle(D.o.map((_,i)=>i));
+  let h=`<span class="tag" style="background:var(--dark)">DECISIÓN ${turn+1} DE 7 · ${D.topic.toUpperCase()}</span>
+    <h2 style="margin-top:12px">${D.title}</h2><p style="margin:4px 0 6px;color:#3E4A45">${D.ctx}</p>`;
+  order.forEach((oi,i)=>{ h+=`<button class="choice" data-o="${oi}"><span class="l" style="background:${LC[i]}">${L[i]}</span><span>${D.o[oi].t}<small>${D.o[oi].s}</small></span></button>`; });
+  h+=`<div id="out"></div><div class="row"><button class="btn alt" id="say">🔊 Escuchar</button></div>`;
+  $("stage").innerHTML=h;
+  $("say").onclick=()=>say(D.title+". "+D.ctx+" "+order.map((oi,i)=>"Opción "+L[i]+": "+D.o[oi].t+". "+D.o[oi].s).join(" "),true);
+  document.querySelectorAll("#stage .choice").forEach(b=>b.onclick=()=>choose(+b.dataset.o,b));
+  say(D.title+". "+D.ctx);
+}
+function choose(oi,btn){
+  const D=DEC[turn], o=D.o[oi];
+  document.querySelectorAll("#stage .choice").forEach(b=>b.disabled=true); btn.classList.add("picked");
+  const f=o.flag||{};
+  let eff=Object.assign({},o.e), extra="";
+  if(S.infra<1 && f.green){ // slow infrastructure: green measures cost more and deliver less
+    for(const k of ["em","fos","rail","en"]) if(eff[k]) eff[k]= (k==="em"||k==="fos") ? (eff[k]<0?Math.round(eff[k]*S.infra):eff[k]) : (eff[k]>0?Math.round(eff[k]*S.infra):eff[k]);
+    if(eff.din<0) eff.din=Math.round(eff.din*1.3);
+    extra+=`<div class="res" style="background:#EEF3FB">🏗️ En tu país las obras son lentas y caras: esta medida rinde menos y cuesta un 30 % más.</div>`;
+  }
+  const d=applyEff(eff,o.m);
+  if(f.green && pacts.funds==="active") S.greenSinceFunds++;
+  if(f.closeNoPlan && pacts.union==="active"){ const d2=applyEff({apo:-12,emp:-5,din:-4}); extra+=`<div class="res" style="background:#FDE7E8"><b>⚠️ Has roto el pacto con los sindicatos:</b> huelga general.${chips(d2)}</div>`; pacts.union="fail"; sanctions.push(YEARS[turn]+": huelga general por romper el pacto social"); }
+  if(f.stateAid){ S.stateAid=YEARS[turn]; }
+  if(f.landfill){ S.landfill=YEARS[turn]; }
+  if(f.noCombustion){ S.combustion=false; }
+  if(pacts.gas==="active" && S.fos<30 && !S.gasPenalty){ S.gasPenalty=1; const d3=applyEff({din:-14}); pacts.gas="fail"; sanctions.push(YEARS[turn]+": penalización por incumplir el contrato de gas"); extra+=`<div class="res" style="background:#FDE7E8"><b>⚠️ Contrato de gas incumplido:</b> la energía fósil ha bajado del 30 %. Pagas la penalización del contrato.${chips(d3)}</div>`; }
+  history.push({y:YEARS[turn], what:D.topic+": "+o.t});
+  renderInds();
+  $("out").innerHTML=`<div class="res"><b>Qué ha pasado:</b> ${o.x}${chips(d)}</div>${extra}<div class="row"><button class="btn" id="cont">Continuar ➜</button></div>`;
+  $("cont").onclick=showPactOrEvent; $("cont").focus(); say(o.x);
+}
+function showPactOrEvent(){
+  const P=PACTS.find(p=>p.at===turn);
+  if(P) return showPact(P);
+  showEvent();
+}
+function showPact(P){
+  let h=`<div class="card event pact" style="margin-top:0;box-shadow:none"><span class="tag" style="background:var(--eu)">PACTO PROPUESTO</span>
+    <h2 style="margin-top:12px">${P.t}</h2><p>${P.d}</p>
+    <button class="choice" data-k="sign"><span class="l" style="background:#2E8B57">✓</span><span>Firmar<small>${P.sign.x}</small></span></button>
+    <button class="choice" data-k="no"><span class="l" style="background:#E63946">✕</span><span>No firmar<small>${P.no.x}</small></span></button>
+    <div id="out2"></div><div class="row"><button class="btn alt" id="say2">🔊 Escuchar</button></div></div>`;
+  $("stage").innerHTML=h;
+  $("say2").onclick=()=>say(P.t.replace(/^\S+\s/,"")+". "+P.d+" Firmar: "+P.sign.x+" No firmar: "+P.no.x,true);
+  say(P.t.replace(/^\S+\s/,"")+". "+P.d);
+  document.querySelectorAll("#stage .choice").forEach(b=>b.onclick=()=>{
+    document.querySelectorAll("#stage .choice").forEach(x=>x.disabled=true); b.classList.add("picked");
+    const k=b.dataset.k, r=P[k], d=applyEff(r.e);
+    if(k==="sign"){ pacts[P.id]="active"; if(P.id==="funds") S.greenSinceFunds=0; }
+    history.push({y:YEARS[turn], what:(k==="sign"?"Firma: ":"Rechaza: ")+P.t.replace(/^\S+\s/,"")});
+    renderInds();
+    $("out2").innerHTML=`<div class="res">${r.x}${chips(d)}</div><div class="row"><button class="btn" id="cont2">Continuar ➜</button></div>`;
+    $("cont2").onclick=showEvent; $("cont2").focus(); say(r.x);
+  });
+}
+function showEvent(){
+  const ev=evLeft.shift();
+  const autoD=applyEff(ev.auto(S,C), ev.m);
+  renderInds();
+  let h=`<div class="card event ${ev.good?"good":""}" style="margin-top:0;box-shadow:none"><span class="tag" style="background:${ev.good?"#2E8B57":"#F28C28"}">${ev.good?"UNA OPORTUNIDAD":"UNA TRABA"}</span>
+    <h2 style="margin-top:12px">${ev.t}</h2><p>${ev.d}</p>${Object.values(autoD).some(v=>v)?`<div class="note">Efecto inmediato:</div>${chips(autoD)}`:""}`;
+  ev.o.forEach((o,i)=>{ h+=`<button class="choice" data-i="${i}"><span class="l" style="background:${["#2D7DD2","#F28C28"][i]}">${["A","B"][i]}</span><span>${o.t}</span></button>`; });
+  h+=`<div id="out2"></div><div class="row"><button class="btn alt" id="say2">🔊 Escuchar</button></div></div>`;
+  $("stage").innerHTML=h;
+  $("say2").onclick=()=>say(ev.t.replace(/^\S+\s/,"")+". "+ev.d+" Opción A: "+ev.o[0].t+". Opción B: "+ev.o[1].t+".",true);
+  say(ev.t.replace(/^\S+\s/,"")+". "+ev.d);
+  document.querySelectorAll("#stage .choice").forEach(b=>b.onclick=()=>{
+    const o=ev.o[+b.dataset.i];
+    document.querySelectorAll("#stage .choice").forEach(x=>x.disabled=true); b.classList.add("picked");
+    const d=applyEff(o.e); const fl=o.flag||{};
+    if(fl.noCombustion) S.combustion=false; if(fl.cruiseCap) S.cruiseCap=true; if(fl.fasterInfra) S.infra=0.85;
+    if(fl.euConflict){ expediente=true; sanctions.push(YEARS[turn]+": expediente por no aplicar las sanciones europeas"); }
+    history.push({y:YEARS[turn], what:ev.t.replace(/^\S+\s/,"")+": "+o.t});
+    renderInds();
+    $("out2").innerHTML=`<div class="res">${o.x}${chips(d)}</div><div class="row"><button class="btn" id="cont2">Ver el balance del periodo ➜</button></div>`;
+    $("cont2").onclick=showFlows; $("cont2").focus(); say(o.x);
+  });
+}
+// Economic and energy flows of the period
+function showFlows(){
+  const rows=[];
+  const add=(t,v,k="din")=>{ if(v){ rows.push([t,v,k]); } };
+  add("Impuestos y actividad económica", 7);
+  C.flows.forEach(fl=>add(fl.t, fl.f(S)));
+  add("Pago por emisiones de CO₂ (mercado europeo)", -Math.round(S.em/28*ETS[turn]));
+  add("Ahorro por energía limpia (más barata)", Math.round((100-S.fos)/22));
+  const enDrift = -3; // demand grows as the economy electrifies
+  const din0=S.din;
+  rows.forEach(r=>{ S.din=clamp(S.din+r[1],0,100); });
+  S.en=clamp(S.en+enDrift+Math.round((100-S.fos-30)/25),0,100);
+  if(S.em>60) S.nat=clamp(S.nat-2,0,100);
+  S.rail=clamp(S.rail-3,0,100); // wear without maintenance
+  // rising carbon price pushes the oldest fossil plants out of the market
+  const etsCut=Math.round(ETS[turn]*2.5*(S.fos/80));
+  S.em=clamp(S.em-etsCut,0,120); S.fos=clamp(S.fos-Math.round(etsCut*0.8),0,100); S.en=clamp(S.en-1,0,100);
+  if(S.rail>=60){ S.em=clamp(S.em-3,0,120); S.fos=clamp(S.fos-2,0,100); }
+  // obligations: waste directive, state aid
+  const msgs=[];
+  if(S.landfill && S.landfill<YEARS[turn]+1 && !S.landfillFined && turn>=4){ S.landfillFined=1; applyEff({din:-7}); sanctions.push(YEARS[turn]+": multa por incumplir la directiva de vertederos"); msgs.push("⚖️ La Comisión sanciona el vertedero por incumplir la directiva europea: −7 de dinero."); }
+  if(S.stateAid && !S.aidReturned && turn>=3){ S.aidReturned=1; applyEff({din:-6}); sanctions.push(YEARS[turn]+": devolución de ayudas públicas no autorizadas a las minas"); msgs.push("⚖️ La Comisión declara ilegales parte de las ayudas a las minas: devuelves 6 de dinero."); }
+  if(etsCut) msgs.unshift(`💶 El precio del CO₂ hace que cierren las centrales más viejas: emisiones −${etsCut}. Si no hay energía limpia que las sustituya, baja la energía garantizada.`);
+  if(S.rail<40){ applyEff({apo:-3}); msgs.push("🚆 El tren sigue fallando: la gente usa el coche y se queja. Sin inversión, el transporte público se degrada cada periodo."); }
+  else if(S.rail>=60){ msgs.push("🚆 El tren funciona bien: más gente deja el coche (emisiones −3 este periodo)."); }
+  // blackout
+  if(S.en<40){ applyEff({emp:-6,apo:-8,din:-5}); msgs.push("⚡ La energía garantizada está por debajo de 40: hay apagones y racionamiento. Empleo, apoyo y dinero bajan."); }
+  if(S.din<=0){ S.din=8; applyEff({apo:-8}); msgs.push("💸 El país se ha quedado sin dinero: recortes y deuda. Baja el apoyo."); }
+  renderInds();
+  const total=Math.round(S.din-din0);
+  let h=`<span class="tag" style="background:var(--green)">BALANCE DEL PERIODO</span><h2 style="margin-top:12px">Así se ha movido el dinero</h2>
+    <table class="flow">${rows.map(r=>`<tr><td>${r[0]}</td><td class="${r[1]>0?"pos":"neg"}">${r[1]>0?"+":"−"}${Math.abs(r[1])}</td></tr>`).join("")}
+    <tr><td><b>Total del periodo (con límites del presupuesto)</b></td><td class="${total>=0?"pos":"neg"}">${total>=0?"+":"−"}${Math.abs(total)}</td></tr></table>
+    <p class="note">La demanda de energía crece al electrificar: la energía garantizada baja 3 puntos por periodo si no se construye más generación limpia. El tren se desgasta 3 puntos por periodo sin mantenimiento.</p>
+    ${msgs.map(m=>`<div class="res" style="background:${m.startsWith("💶")||m.includes("funciona bien")?"#EEF3FB":"#FDE7E8"}">${m}</div>`).join("")}
+    <div class="row"><button class="btn" id="cont3">Continuar ➜</button></div>`;
+  $("stage").innerHTML=h; $("cont3").onclick=afterTurn; $("cont3").focus();
+  say("Balance del periodo. "+rows.map(r=>r[0]+": "+(r[1]>0?"más ":"menos ")+Math.abs(r[1])).join(". ")+". "+msgs.join(" "));
+}
+function cp(title,body,cb){ $("stage").innerHTML=`<h2>${title}</h2>${body}<div class="row"><button class="btn" id="cp">Continuar ➜</button></div>`; $("cp").onclick=cb; $("cp").focus(); say(title+". "+$("stage").innerText.replace("Continuar ➜","")); }
+function afterTurn(){
+  const y=YEARS[turn]; turn++; renderTimeline();
+  const queue=[];
+  // pact checks
+  PACTS.forEach(P=>{ if(P.check && pacts[P.id]==="active" && P.check.at===y){ if(P.check.ok(S)){ pacts[P.id]="ok"; queue.push(()=>cp("✅ "+P.check.pass,"<p>Has cumplido lo que firmaste.</p>",next)); } else { pacts[P.id]="fail"; applyEff(P.check.fail.e); sanctions.push(y+": "+P.t.replace(/^\S+\s/,"")+" incumplido"); queue.push(()=>cp("⚠️ Pacto incumplido",`<p>${P.check.fail.x}</p>${chips(P.check.fail.e)}`,next)); } } });
+  if(y===2030){ em2030=S.em; const ok=S.em<=45;
+    if(!ok) expediente=true;
+    queue.push(()=>cp(ok?"✅ Revisión de 2030: meta cumplida":"⚠️ Revisión de 2030: meta no cumplida",
+      `<p>El Pacto Verde obligaba a llegar al <b>45 %</b> de las emisiones de 1990. Estás en el <b>${Math.round(S.em)} %</b>.</p><p>${ok?"Cumples la ley europea.":"La Comisión Europea abre un <b>procedimiento de infracción</b>. Tienes hasta la próxima revisión (2034) para bajar al 40 %; si no, el Tribunal de Justicia de la UE puede multarte."}</p>`,next)); }
+  if(y===2034 && expediente){ if(S.em<=40){ expediente=false; queue.push(()=>cp("✅ Expediente cerrado","<p>Has corregido el retraso. La Comisión archiva el procedimiento.</p>",next)); }
+    else { applyEff({din:-12,apo:-4}); sanctions.push("2034: multa del Tribunal de Justicia de la UE por incumplir la meta climática"); queue.push(()=>cp("⚖️ Multa del Tribunal de Justicia de la UE",`<p>Sigues por encima del 40 %. El tribunal impone una multa: <b>−12 de dinero</b>. El expediente sigue abierto.</p>`,next)); } }
+  if(y===2044 && expediente && S.em>25){ applyEff({din:-10}); sanctions.push("2044: nueva multa por seguir incumpliendo"); queue.push(()=>cp("⚖️ Nueva multa","<p>El incumplimiento continúa: multa adicional de −10.</p>",next)); }
+  if(y===2030||y===2044){ queue.push(()=>elections(next)); }
+  let i=0; function next(){ if(i<queue.length){ queue[i++](); } else { renderInds(); if(turn<DEC.length) showDecision(); else finish(); } }
+  next();
+}
+function elections(next){
+  if(S.apo<35){ lost++; S.em=clamp(S.em+8,0,120); S.fos=clamp(S.fos+6,0,100); S.apo=50; renderInds();
+    return cp("🗳️ Has perdido las elecciones",`<p>El nuevo gobierno revierte parte de tus leyes: <b>emisiones +8</b> y <b>energía fósil +6</b>. Las obligaciones europeas siguen vigentes.</p><p>Lección: una transición sin apoyo social no se sostiene.</p>`,next); }
+  return cp("🗳️ Elecciones: renuevas el mandato",`<p>Apoyo del ${Math.round(S.apo)} %. Sigues gobernando.</p>`,next);
+}
+function finish(){
+  $("play").classList.add("hidden"); const E=$("end"); E.classList.remove("hidden");
+  const ok=b=>b?"✅":"❌";
+  const checks=[
+    [S.em<=10,"Pacto Verde: neutralidad climática en 2050",`Emisiones: ${Math.round(S.em)} % (meta: 10 % o menos)`,"#1E4FA3"],
+    [em2030!==null&&em2030<=45,"Pacto Verde: meta de 2030",`En 2030: ${Math.round(em2030)} % (meta: 45 %)`,"#1E4FA3"],
+    [sanctions.length===0,"Sin sanciones ni pactos rotos",sanctions.length?sanctions.join(" · "):"Ninguna","#E63946"],
+    [S.en>=50,"Energía garantizada (sin apagones)",`Energía: ${Math.round(S.en)} (meta: 50 o más)`,"#F28C28"],
+    [S.rail>=55,"ODS 11: transporte público que funciona",`Tren y transporte: ${Math.round(S.rail)} (meta: 55 o más)`,"#FD9D24"],
+    [S.emp>=50,"ODS 8: trabajo decente",`Empleo: ${Math.round(S.emp)} (meta: 50 o más)`,"#A21942"],
+    [S.nat>=55,"ODS 14 y 15 · límites planetarios",`Naturaleza: ${Math.round(S.nat)} (meta: 55 o más)`,"#56C02B"],
+    [S.apo>=40&&lost===0,"Transición justa: con apoyo social",`Apoyo: ${Math.round(S.apo)} · Elecciones perdidas: ${lost}`,"#7B4FA0"],
+    [S.din>=15,"Cuentas sanas",`Dinero: ${Math.round(S.din)} (meta: 15 o más)`,"#2E8B57"]
+  ];
+  const n=checks.filter(c=>c[0]).length;
+  const v= n>=8?["🏆 Transición ejemplar","Has reducido emisiones sin apagones, sin sanciones y con apoyo social. Es lo más difícil."]:
+           n>=6?["👍 Buena transición, con costes","Has avanzado, pero algún equilibrio (energía, dinero, empleo o compromisos) se ha resentido."]:
+                ["🔄 Transición incompleta","Mira qué decisiones chocaron entre sí: energía, dinero, empleo y obligaciones."];
+  E.innerHTML=`<span class="pill" style="background:${C.color}">${C.emoji} ${C.name} · 2050</span>
+    <h2 style="margin-top:14px;font-size:32px">${v[0]}</h2><p style="font-size:23px">${v[1]} Has cumplido <b>${n} de ${checks.length}</b> metas.</p>
+    ${checks.map(c=>`<div class="check"><span class="ic">${ok(c[0])}</span><div><b style="color:${c[3]}">${c[1]}</b><br><span style="font-size:18px">${c[2]}</span></div></div>`).join("")}
+    <h3 style="font-size:25px;margin-top:22px">Tu camino</h3>
+    <div style="font-size:18px">${history.map(h=>`<div style="padding:5px 0;border-bottom:1px solid #e2ebe6"><b>${h.y}</b> · ${h.what}</div>`).join("")}</div>
+    <div class="res" style="margin-top:18px"><b>Para comentar en grupo:</b> ¿Qué decisión te dio dinero a corto plazo pero problemas después? ¿Algún pacto te ató las manos? ¿Cuándo chocaron la energía, el empleo y el clima? ¿Se podía hacer todo a la vez?</div>
+    <div class="row"><button class="btn" id="again">Jugar otra vez</button><button class="btn alt" id="other">Probar otro país</button></div>`;
+  $("again").onclick=()=>{E.classList.add("hidden"); start(C);};
+  $("other").onclick=()=>{E.classList.add("hidden"); $("pick").classList.remove("hidden");};
+  say(v[0].replace(/^\S+\s/,"")+". "+v[1]+" Has cumplido "+n+" de "+checks.length+" metas.");
+}
+// bring each new step into view (the side panels can push it down)
+new MutationObserver(()=>{ const r=$("stage").getBoundingClientRect(); if(r.top<0||r.top>window.innerHeight*0.5) $("stage").scrollIntoView({behavior:"smooth",block:"start"}); }).observe($("stage"),{childList:true});
+$("go").onclick=()=>{ say(""); $("intro").classList.add("hidden"); $("pick").classList.remove("hidden"); };
+$("sayIntro").onclick=()=>say($("intro").innerText.replace("Elegir mi país ➜","").replace("🔊 Escuchar",""),true);
+$("countries").innerHTML=COUNTRIES.map((c,i)=>`<button class="country" data-i="${i}" style="background:${c.color}"><span class="emoji">${c.emoji}</span><b>${c.name}</b><p>${c.desc}</p><p>👍 ${c.pro}</p><p>👎 ${c.con}</p></button>`).join("");
+document.querySelectorAll(".country").forEach(b=>b.onclick=()=>start(COUNTRIES[+b.dataset.i]));
+(function(){ const keep=()=>{ if(!document.getElementById("wm")){const d=document.createElement("div");d.id="wm";d.setAttribute("aria-hidden","true");document.body.prepend(d);}
+  if(!document.getElementById("badge")){const b=document.createElement("div");b.id="badge";b.textContent="CC BY-NC-ND 4.0 · Oriol Pérez";document.body.appendChild(b);} };
+  new MutationObserver(keep).observe(document.body,{childList:true}); setInterval(keep,2000); })();
+</script>
+</body>
+</html>
